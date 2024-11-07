@@ -3,7 +3,6 @@ pub fn odd_fibnacci_sum(threshold: u32) -> u32 {
     let mut prev: u32 = 1;
     let mut curr: u32 = 1;
     let mut res = 1; // first one
-    let mut flag: bool = true;
 
     // Something like sliding window, only contains the contents calculating.
     while curr < threshold {
