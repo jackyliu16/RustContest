@@ -9,7 +9,6 @@ pub fn odd_fibnacci_sum(threshold: u32) -> u32 {
     while curr < threshold {
         if curr % 2 != 0 {
             res += curr;
-            dbg!(curr);
         }
         curr += prev;
         prev = curr - prev;
