@@ -1,5 +1,6 @@
 use const_primes::{primes, Primes};
 
+const PRIMES_CACHE: Primes<10000> = Primes::new();
 pub fn goldbach_conjecture() -> u64 {
     let mut res = 0;
     for odd in generate_odd_composite_number() {
@@ -20,6 +21,21 @@ pub fn goldbach_conjecture() -> u64 {
     0
 }
 
+/// 求素数
+#[inline(always)]
+fn is_prime(num: u64) -> bool {
+    if num <= 1 {
+        return false;
+    }
+    for i in 2..=((num as f64).sqrt() as u64) {
+        if num % i == 0 {
+            return false;
+        }
+    }
+    true
+}
+
+
 /// 生成奇合数
 /// 奇合数：奇数且不是素数
 pub fn generate_odd_composite_number() -> impl Iterator<Item = u64> {
@@ -34,7 +50,15 @@ pub fn generate_odd_composite_number() -> impl Iterator<Item = u64> {
     })
 }
 
-const PRIMES_CACHE: Primes<10000> = Primes::new();
+/// 精度更好的开方匹配
+/// odd = primes + 2 * n.pow(2)
+/// n = $\left (\sqrt{\frac{odd - primes}{2} } \right ) ^2$
+#[inline]
+pub fn is_same_after_sqrt(num: u64) -> bool {
+    // f64::sqrt(num as f64) % 1_f64 == 0_f64 // TODO： 精度可能不是很高
+    let tmp = (num as f64).sqrt() as u64;
+    tmp.pow(2) == num
+}
 
 /// 计算一个数能否由一个素数与其平方的两倍计算而成
 /// n: 奇合数
@@ -46,31 +70,6 @@ pub fn goldbach_falsification(odd: u32) -> bool {
         }
     }
     false
-}
-
-/// 精度更好的开方匹配
-/// odd = primes + 2 * n.pow(2)
-/// n = $\left (\sqrt{\frac{odd - primes}{2} } \right ) ^2$
-#[inline]
-pub fn is_same_after_sqrt(num: u64) -> bool {
-    // f64::sqrt(num as f64) % 1_f64 == 0_f64 // TODO： 精度可能不是很高
-    let tmp = (num as f64).sqrt() as u64;
-    tmp.pow(2) == num
-}
-
-
-/// 求素数
-#[inline(always)]
-fn is_prime(num: u64) -> bool {
-    if num <= 1 {
-        return false;
-    }
-    for i in 2..=((num as f64).sqrt() as u64) {
-        if num % i == 0 {
-            return false;
-        }
-    }
-    true
 }
 
 /// 计算某个数是不是奇合数
