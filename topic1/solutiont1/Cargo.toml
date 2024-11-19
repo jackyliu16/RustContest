@@ -4,6 +4,7 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
+const-primes = "0.9.3"
 
 [[test]]
 name = "tests"
