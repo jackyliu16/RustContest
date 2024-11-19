@@ -3,9 +3,9 @@ use const_primes::{primes, Primes};
 pub fn goldbach_conjecture() -> u64 {
     let mut res = 0;
     for odd in generate_odd_composite_number() {
-        if (2_u64..odd)
-            .into_iter()
-            .all(|p| !(is_prime(p) && (odd - p) % 2 == 0 && is_same_after_sqrt((odd - p) / 2))) {
+        if PRIMES_CACHE.iter().take_while(|&&x| x < odd as u32)
+            .map(|s| *s as u32 as u64)
+            .all(|p| !((odd - p) % 2 == 0 && is_same_after_sqrt((odd - p) / 2))) {
 
             // 遍历全部但是还没找到 -> 确实不满足
             if res == 0 { // 第一个
