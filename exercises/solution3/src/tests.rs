@@ -1,9 +1,9 @@
+
 mod calc_logic;
 
 #[cfg(test)]
 mod tests {
     use super::calc_logic::new_birthday_probability;
-
     // 定义测试用例和预期结果
     const TEST_CASES: &[(u32, f64)] = &[
         (23, 0.5073),
@@ -15,7 +15,7 @@ mod tests {
 
     // 定义一个测试函数来验证每个测试用例
     #[test]
-    fn test_new_birthday_probability() {
+    fn test_solution3() {
         let mut total_score = 0.0;
         for (input, expected) in TEST_CASES {
             let result = new_birthday_probability(*input);
@@ -35,3 +35,4 @@ mod tests {
         assert_eq!(100.00, total_score);
     }
 }
+    

@@ -1,3 +1,4 @@
+
 // src/tests.rs
 mod count_distinct;
 
@@ -12,9 +13,10 @@ mod tests {
         ("a,b,c,好,好,爱", 5),
         ("a,b,c,0,e,cd", 6),
     ];
+
     // 定义一个测试函数来验证每个测试用例
     #[test]
-    fn test_count() {
+    fn test_solution1() {
         let mut total_score = 0.0;
         for (input1, expected) in TEST_CASES {
             let result = new_count_distinct(*input1);
@@ -26,3 +28,4 @@ mod tests {
         assert_eq!(100.00, total_score);
     }
 }
+    

@@ -1,6 +1,7 @@
 
 // src/tests.rs
 mod fibnacci;
+
 #[cfg(test)]
 mod tests {
     use super::fibnacci::odd_fibnacci_sum;
@@ -14,7 +15,7 @@ mod tests {
     ];
     // 定义一个测试函数来验证每个测试用例
     #[test]
-    fn test_count() {
+    fn test_solution5() {
         let mut total_score = 0.0;
         for (input1, expected) in TEST_CASES {
             let result = odd_fibnacci_sum(*input1);
@@ -26,3 +27,4 @@ mod tests {
         assert_eq!(100.00, total_score);
     }
 }
+    

@@ -1,6 +1,7 @@
 
 // src/tests.rs
 mod converter;
+
 #[cfg(test)]
 mod tests {
     use super::converter::convert_base;
@@ -16,12 +17,11 @@ mod tests {
 
     // 定义一个测试函数来验证每个测试用例
     #[test]
-    fn test_converter() {
+    fn test_solution2() {
         let mut total_score = 0.0;
 
         for (input1, input2, expected) in TEST_CASES {
             let result = convert_base(*input1, *input2);
-
             if result == *expected {
                 total_score += 20.0;
             }
@@ -30,3 +30,4 @@ mod tests {
         assert_eq!(100.00, total_score);
     }
 }
+    
