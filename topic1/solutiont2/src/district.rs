@@ -12,9 +12,10 @@ pub fn count_provinces() -> String {
         .expect("Cannot access current working directory")
         .parent()
         .expect("Cannot get parent directory of current working directory")
-        .join("topic1")
-        .join("solution2")
+        .join("solutiont2")
         .join("district.json");
+
+    println!("Provinces: {}", path.display());
 
     let data = fs::read_to_string(&path).unwrap();
     // let data = fs::read_to_string("topic1/solutiont2/district.json").unwrap();
