@@ -3,7 +3,7 @@ mod calc_time;
 
 #[cfg(test)]
 mod tests {
-    use super::calc_time::{days_until_year, time_info};
+    use super::calc_time::{days_until_year, how_many_days_of_this_month, time_info};
     use std::time::{Instant, Duration};
 
     // 定义测试用例和预期结果
@@ -84,6 +84,17 @@ mod tests {
         for (year, expected) in test_cases {
             let result = days_until_year(year);
             assert_eq!(result, expected, "Test failed for year {}: expected {}, got {}", year, expected, result);
+        }
+    }
+
+    #[test]
+    fn tests_how_many_days_in_month() {
+        let months = vec![ 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31, ];
+        let leap_months = vec![ 31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31, ];
+
+        for i in 1..=12 {
+            assert_eq!(how_many_days_of_this_month(2023, i), months[i - 1]); // 平年
+            assert_eq!(how_many_days_of_this_month(2024, i), leap_months[i - 1]); // 闰年
         }
     }
 }

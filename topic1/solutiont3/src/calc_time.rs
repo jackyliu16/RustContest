@@ -23,3 +23,18 @@ pub fn days_until_year(mut year: isize) -> isize {
 
     days + leap_years
 }
+
+pub fn how_many_days_of_this_month(year: isize, month: usize) -> usize {
+    if month == 0 { panic!("Incorrect Format") }
+    match month {
+        4 | 6 | 9 | 11 => 30,
+        2 if is_leap_year(year) => 29,
+        2 if ! is_leap_year(year) => 28,
+        _ => 31,
+    }
+}
+// pub fn days_until_months_since_years(year: isize, month: usize) -> usize {
+//     let mut days = 0;
+//     for m in 0..=12 {
+//     }
+// }
