@@ -1,3 +1,5 @@
+use std::ops::Sub;
+
 pub fn time_info(time: &str) -> String {
     todo!()
 }
@@ -40,4 +42,22 @@ pub fn days_until_months_since_years(year: isize, month: usize) -> usize {
         days += how_many_days_of_this_month(year, m);
     }
     days
+}
+
+/// 蔡勒公式(Zellers Kongruenz)
+/// https://zh.wikipedia.org/wiki/%E8%94%A1%E5%8B%92%E5%85%AC%E5%BC%8F
+/// w = \left ( y + \left[\frac{y}{4}\right] + \left[\frac{c}{4}\right] - 2c + \left[\frac{26(m+1)}{10}\right] +d -1 \right ) \bmod 7
+pub fn zellers_kongruenz(mut year: isize, mut month: usize, mut day: usize) -> usize {
+    if year <= 0 { panic!("Incorrect Data: zellers_kongruenz only support BC") }
+    let cnt = 0;
+
+    if month < 3 { // 菜勒要求1-3月被诗作为前一年的13-14月
+        month += 12;
+        year -= 1;
+    };
+
+    let (c, y) = (year as usize / 100, year as usize % 100);
+    let week_days = (y + y / 4 + c / 4+ 26 * (month + 1) / 10 + day).sub(2 * c + 1);
+
+    (week_days as usize % 7 + 7) % 7
 }

@@ -3,7 +3,7 @@ mod calc_time;
 
 #[cfg(test)]
 mod tests {
-    use super::calc_time::{days_until_months_since_years, days_until_year, how_many_days_of_this_month, time_info};
+    use super::calc_time::{days_until_months_since_years, days_until_year, how_many_days_of_this_month, time_info, zellers_kongruenz};
     use std::time::{Instant, Duration};
 
     // 定义测试用例和预期结果
@@ -106,5 +106,26 @@ mod tests {
         assert_eq!(days_until_months_since_years(2024, 3), 60); // January + February (leap year)
         assert_eq!(days_until_months_since_years(2023, 12), 334); // Up to November
         assert_eq!(days_until_months_since_years(2024, 12), 335); // Up to November (leap year)
+    }
+
+    #[test]
+    fn test_zellers_kongruenz() {
+        assert_eq!(zellers_kongruenz(2024, 11, 22), 5); // TODAY - FRIDAY
+        assert_eq!(zellers_kongruenz(2024, 11, 21), 4);
+        assert_eq!(zellers_kongruenz(2024, 11, 20), 3);
+        assert_eq!(zellers_kongruenz(2024, 11, 19), 2);
+        assert_eq!(zellers_kongruenz(2024, 11, 18), 1);
+        assert_eq!(zellers_kongruenz(2024, 11, 17), 0); // SUNDAY
+        assert_eq!(zellers_kongruenz(2024, 1, 1), 1);   // MONDAY
+        // Test case for a known date: 2023-11-21 (Tuesday)
+        assert_eq!(zellers_kongruenz(2023, 11, 21), 2);
+        // // Test for February in a leap year: 2024-02-29 (Thursday)
+        assert_eq!(zellers_kongruenz(2024, 2, 29), 4);
+        // // Test for the first day of the year: 2023-01-01 (Sunday)
+        assert_eq!(zellers_kongruenz(2023, 1, 1), 0);
+        // // Test for end-of-year: 2023-12-31 (Sunday)
+        assert_eq!(zellers_kongruenz(2023, 12, 31), 0);
+        // // Test for a well-known historical date: 1969-07-20 (Sunday)
+        assert_eq!(zellers_kongruenz(1969, 7, 20), 0);
     }
 }
