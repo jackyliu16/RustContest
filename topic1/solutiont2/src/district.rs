@@ -101,7 +101,7 @@ fn count_connected_components<'a>(graph: &'a HashMap<&'a str, Vec<&'a str>>) -> 
     let mut visited: HashSet<&'a str> = HashSet::new();
     let mut count = 0;
     for &node in graph.keys() {
-        if !visited.contains(node) {
+        if !visited.contains(node) && graph[node].iter().all(|item| !visited.contains(item)) {
             count += 1;
             dfs(node, graph, &mut visited);
         }
