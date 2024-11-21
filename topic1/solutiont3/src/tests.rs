@@ -3,7 +3,7 @@ mod calc_time;
 
 #[cfg(test)]
 mod tests {
-    use super::calc_time::{days_until_year, how_many_days_of_this_month, time_info};
+    use super::calc_time::{days_until_months_since_years, days_until_year, how_many_days_of_this_month, time_info};
     use std::time::{Instant, Duration};
 
     // 定义测试用例和预期结果
@@ -96,5 +96,15 @@ mod tests {
             assert_eq!(how_many_days_of_this_month(2023, i), months[i - 1]); // 平年
             assert_eq!(how_many_days_of_this_month(2024, i), leap_months[i - 1]); // 闰年
         }
+    }
+
+    #[test]
+    fn test_days_until_months_since_years() {
+        assert_eq!(days_until_months_since_years(2023, 1), 0); // January: 0 days
+        assert_eq!(days_until_months_since_years(2023, 2), 31); // January
+        assert_eq!(days_until_months_since_years(2023, 3), 59); // January + February (non-leap year)
+        assert_eq!(days_until_months_since_years(2024, 3), 60); // January + February (leap year)
+        assert_eq!(days_until_months_since_years(2023, 12), 334); // Up to November
+        assert_eq!(days_until_months_since_years(2024, 12), 335); // Up to November (leap year)
     }
 }

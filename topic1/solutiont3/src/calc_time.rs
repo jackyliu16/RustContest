@@ -33,8 +33,11 @@ pub fn how_many_days_of_this_month(year: isize, month: usize) -> usize {
         _ => 31,
     }
 }
-// pub fn days_until_months_since_years(year: isize, month: usize) -> usize {
-//     let mut days = 0;
-//     for m in 0..=12 {
-//     }
-// }
+
+pub fn days_until_months_since_years(year: isize, month: usize) -> usize {
+    let mut days = 0;
+    for m in 1..month {
+        days += how_many_days_of_this_month(year, m);
+    }
+    days
+}
