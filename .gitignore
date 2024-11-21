@@ -1,6 +1,7 @@
 /target
-/topic1/solutiont12
 Cargo.lock
 
-.direnv/
 .idea/
+.direnv/
+/topic1/solutiont12
+
