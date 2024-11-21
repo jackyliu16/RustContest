@@ -3,7 +3,7 @@ mod calc_time;
 
 #[cfg(test)]
 mod tests {
-    use super::calc_time::time_info;
+    use super::calc_time::{days_until_year, time_info};
     use std::time::{Instant, Duration};
 
     // 定义测试用例和预期结果
@@ -64,5 +64,26 @@ mod tests {
         assert!(!is_leap_year(-3));  // -3 不是闰年
         assert!(!is_leap_year(-100)); // -100 不是闰年
         assert!(is_leap_year(-400)); // -400 是闰年
+    }
+
+    #[test]
+    fn test_days_until_year() {
+        let test_cases = [
+            (1, 0),
+            (5, 1461),
+            (10, 3287),
+            (100, 36159),
+            (400, 145731),
+            (-1, -365),
+            (-4, -1461),
+            (-100, -36524),
+            (-400, -146097),
+            (-2, -730),
+        ];
+
+        for (year, expected) in test_cases {
+            let result = days_until_year(year);
+            assert_eq!(result, expected, "Test failed for year {}: expected {}, got {}", year, expected, result);
+        }
     }
 }
