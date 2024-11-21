@@ -80,7 +80,7 @@ pub fn count_provinces() -> String {
     let json_data: Data = serde_json::from_str(&data).unwrap();
 
     // 获取将对应的内容解析并写入到数据结构
-    let mut turns: Vec<HashMap<&str, Vec<&str>>> = vec![HashMap::new(); json_data.data.len()]; // 由于迭代器，第一个为空
+    let mut turns: Vec<HashMap<&str, Vec<&str>>> = vec![HashMap::new(); json_data.data.len()];  // 由于迭代器，第一个为空
     for (idx, mut turn) in turns.iter_mut().enumerate() {
         if let Some(data) = json_data.data.get((idx + 1).to_string().as_str()) {      // 由于迭代器，第一个为空
             // struct InnerData(Vec<(String, Vec<String>)>);
