@@ -2,3 +2,5 @@
 /topic1/solutiont12
 Cargo.lock
 
+.direnv/
+.idea/
