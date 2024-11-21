@@ -3,7 +3,7 @@ mod calc_time;
 
 #[cfg(test)]
 mod tests {
-    use super::calc_time::{days_until_months_since_years, days_until_year, how_many_days_of_this_month, time_info, zellers_kongruenz};
+    use super::calc_time::{days_until_months_since_years, days_until_year, get_curr_week_since_this_year, how_many_days_of_this_month, time_info, zellers_kongruenz};
     use std::time::{Instant, Duration};
 
     // 定义测试用例和预期结果
@@ -128,4 +128,88 @@ mod tests {
         // // Test for a well-known historical date: 1969-07-20 (Sunday)
         assert_eq!(zellers_kongruenz(1969, 7, 20), 0);
     }
+
+    /// (year, 1, 1) 是周一
+    #[test]
+    fn test_week_num_situation_1() {
+        assert_eq!(get_curr_week_since_this_year(2024, 1, 1), 1);
+        assert_eq!(get_curr_week_since_this_year(2024, 1, 2), 1);
+        assert_eq!(get_curr_week_since_this_year(2024, 1, 3), 1);
+        assert_eq!(get_curr_week_since_this_year(2024, 1, 4), 1);
+        assert_eq!(get_curr_week_since_this_year(2024, 1, 5), 1);
+        assert_eq!(get_curr_week_since_this_year(2024, 1, 6), 1);
+        assert_eq!(get_curr_week_since_this_year(2024, 1, 7), 1);
+    }
+
+    /// (year, 1, 1) 是周二到周四
+    #[test]
+    fn test_week_num_situation_2() {
+        assert_eq!(get_curr_week_since_this_year(2024, 1, 1), 1); // MON
+        assert_eq!(get_curr_week_since_this_year(2019, 1, 1), 1); // TUE
+        assert_eq!(get_curr_week_since_this_year(2025, 1, 1), 1); // WED
+        assert_eq!(get_curr_week_since_this_year(2019, 1, 1), 1); // THU
+    }
+
+    fn test_week_num_situation_3() {
+        assert_eq!(get_curr_week_since_this_year(2236, 1, 1), 52); // FRI
+        assert_eq!(get_curr_week_since_this_year(2028, 1, 1), 52); // SAT
+        assert_eq!(get_curr_week_since_this_year(2012, 1, 1), 52); // SUN
+    }
+
+    fn test_week_num_situation_4() {
+        // assert_eq!(get_curr_week_since_this_year(2094, 1, 1), 53); // FRI
+        // assert_eq!(get_curr_week_since_this_year(1993, 1, 1), 53); // SAT
+        // assert_eq!(get_curr_week_since_this_year(2010, 1, 1), 53); // SUN
+    }
+
+    #[test]
+    fn test_week_num_in_testcases() {
+        assert_eq!(get_curr_week_since_this_year(2024,11,10), 45);
+        assert_eq!(get_curr_week_since_this_year(2024,11,18), 47);
+        assert_eq!(get_curr_week_since_this_year(2024,12,31), 1);
+        assert_eq!(get_curr_week_since_this_year(2025,01,01), 1);
+        assert_eq!(get_curr_week_since_this_year(2025,12,31), 1);
+        assert_eq!(get_curr_week_since_this_year(2020,01,20), 4);
+        assert_eq!(get_curr_week_since_this_year(2021,02,13), 6);
+        assert_eq!(get_curr_week_since_this_year(2012,01,22), 3);
+        assert_eq!(get_curr_week_since_this_year(2013,02,11), 7);
+        assert_eq!(get_curr_week_since_this_year(2014,02,02), 5);
+    }
+
+
+    // #[test]
+    // fn test_get_curr_week_since_this_year_firstweek_in_this_year() {
+    //     for i in 1..=7 {
+    //         assert_eq!(get_curr_week_since_this_year(2024, 1, i), 1);
+    //     }
+    // }
+    //
+    // #[test]
+    // fn test_get_curr_week_since_this_year_lastweek_in_this_year() {
+    //     for i in 25..=31 {
+    //         assert_eq!(get_curr_week_since_this_year(2023, 12, i), 52);
+    //     }
+    // }
+    //
+    // #[test]
+    // fn test_get_curr_week_since_this_year() {
+    //     assert_eq!(get_curr_week_since_this_year(1993, 1, 1), 52);
+    //     assert_eq!(get_curr_week_since_this_year(2024, 11, 22), 47); // FRIDAY
+    //     assert_eq!(get_curr_week_since_this_year(2024, 11, 23), 47);
+    //     assert_eq!(get_curr_week_since_this_year(2024, 11, 24), 47);
+    //     assert_eq!(get_curr_week_since_this_year(2024, 11, 25), 48); // MONDAY
+    //     assert_eq!(get_curr_week_since_this_year(2024, 11, 26), 48);
+    //     assert_eq!(get_curr_week_since_this_year(2024, 11, 27), 48);
+    //     assert_eq!(get_curr_week_since_this_year(2024, 11, 28), 48);
+    //
+    //     assert_eq!(get_curr_week_since_this_year(2024, 11, 10), 45);
+    //     assert_eq!(get_curr_week_since_this_year(2024, 11, 18), 47);
+    //     assert_eq!(get_curr_week_since_this_year(2024, 12, 31), 1);
+    //     assert_eq!(get_curr_week_since_this_year(2025, 01, 01), 1);
+    //     assert_eq!(get_curr_week_since_this_year(2020, 01, 20), 4);
+    //     assert_eq!(get_curr_week_since_this_year(2021, 02, 13), 6);
+    //     assert_eq!(get_curr_week_since_this_year(2012, 01, 22), 3);
+    //     assert_eq!(get_curr_week_since_this_year(2013, 02, 11), 7);
+    //     assert_eq!(get_curr_week_since_this_year(2014, 02, 02), 5);
+    // }
 }
