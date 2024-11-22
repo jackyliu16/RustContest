@@ -2,7 +2,7 @@
 name = "zuc"
 version = "0.0.0"
 edition = "2021"
-description = "ZUC Stream Cipher"
+description = "ZUC Stream Cipher Algorithms"
 license = "MIT"
 repository = "https://github.com/Nugine/zuc"
 readme = "README.md"
@@ -15,3 +15,4 @@ all-features = true
 rustdoc-args = ["--cfg", "docsrs"]
 
 [dependencies]
+const-str = "0.5.7"
