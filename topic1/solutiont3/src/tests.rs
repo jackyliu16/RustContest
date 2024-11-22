@@ -3,7 +3,7 @@ mod calc_time;
 
 #[cfg(test)]
 mod tests {
-    use super::calc_time::{days_until_months_since_years, days_until_year, get_curr_week_since_this_year, how_many_days_of_this_month, time_info, zellers_kongruenz};
+    use super::calc_time::{days_until_months_since_years, days_until_year, get_curr_week_since_this_year, how_many_days_of_this_month, lunar_cal, time_info, zellers_kongruenz};
     use std::time::{Instant, Duration};
 
     // 定义测试用例和预期结果
@@ -212,4 +212,17 @@ mod tests {
     //     assert_eq!(get_curr_week_since_this_year(2013, 02, 11), 7);
     //     assert_eq!(get_curr_week_since_this_year(2014, 02, 02), 5);
     // }
+
+    /// DATA FROM https://www.hko.gov.hk/tc/gts/time/conversion.htm
+    #[test]
+    fn tests_get_lunar_new_year_date() {
+        assert_eq!((1901, 2, 19), lunar_cal::get_lunar_new_year_date(1901));
+        assert_eq!((1912, 2, 18), lunar_cal::get_lunar_new_year_date(1912));
+        assert_eq!((1924, 2, 5), lunar_cal::get_lunar_new_year_date(1924));
+        assert_eq!((1949, 1, 29), lunar_cal::get_lunar_new_year_date(1949));
+        assert_eq!((1978, 2, 7), lunar_cal::get_lunar_new_year_date(1978));
+        assert_eq!((2002, 2, 12), lunar_cal::get_lunar_new_year_date(2002));
+        assert_eq!((2035, 2, 8), lunar_cal::get_lunar_new_year_date(2035));
+        assert_eq!((2099, 1, 21), lunar_cal::get_lunar_new_year_date(2099));
+    }
 }
