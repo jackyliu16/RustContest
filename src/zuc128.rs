@@ -1,3 +1,5 @@
+//! ZUC-128 Algorithms
+
 use std::mem;
 
 /// d constants
@@ -100,8 +102,7 @@ fn sbox(x: u32) -> u32 {
 /// (a * b) mod (2^31 - 1)
 #[inline(always)]
 fn mul_m31(a: u32, b: u32) -> u32 {
-    const MOD: u64 = (1 << 31) - 1;
-    ((u64::from(a) * u64::from(b)) % MOD) as u32
+    ((u64::from(a) * u64::from(b)) % ((1 << 31) - 1)) as u32
 }
 
 /// (a + b) mod (2^31 - 1)
