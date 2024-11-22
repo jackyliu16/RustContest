@@ -1,0 +1,17 @@
+[package]
+name = "zuc"
+version = "0.0.0"
+edition = "2021"
+description = "ZUC Stream Cipher"
+license = "MIT"
+repository = "https://github.com/Nugine/zuc"
+readme = "README.md"
+documentation = "https://docs.rs/zuc"
+categories = ["cryptography"]
+keywords = ["zuc", "eea", "eia", "stream-cipher", "crypto"]
+
+[package.metadata.docs.rs]
+all-features = true
+rustdoc-args = ["--cfg", "docsrs"]
+
+[dependencies]
