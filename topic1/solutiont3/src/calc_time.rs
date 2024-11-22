@@ -1,7 +1,39 @@
 use std::ops::Sub;
 
 pub fn time_info(time: &str) -> String {
-    todo!()
+    let vec: Vec<&str> = time.split('-').collect();
+
+    let year = vec[0].parse::<isize>().unwrap();
+    let month = vec[1].parse::<usize>().unwrap();
+    let day = vec[2].parse::<usize>().unwrap();
+
+    let week_num = get_curr_week_since_this_year(year, month, day);
+    let remain_day = how_many_days_between(
+        (year, month, day),
+        (year + 1, 1, 1)
+    );
+
+    let mut curr_lunar_date = lunar_cal::get_lunar_new_year_date(year);
+    let remain_day_to_next_lunar_new_year = how_many_days_between(
+        (year, month, day),
+        lunar_cal::get_lunar_new_year_date(year + 1),
+    );
+
+    let remain_of_next_lunar = if curr_lunar_date < (year, month, day) {
+       remain_day_to_next_lunar_new_year
+    } else {
+        let remain_day_to_curr_lunar_new_year = how_many_days_between(
+            (year, month, day),
+            curr_lunar_date
+        );
+        std::cmp::min(remain_day_to_curr_lunar_new_year, remain_day_to_next_lunar_new_year)
+    };
+
+    format!("{},{},{}",
+            week_num,
+            remain_day,
+            remain_of_next_lunar
+    )
 }
 
 /// 判断是否为闰年
@@ -48,7 +80,7 @@ pub fn days_until_months_since_years(year: isize, month: usize) -> usize {
 pub fn how_many_days_between((year, month, day): (isize, usize, usize), (y, m, d): (isize, usize, usize)) -> usize {
     let date1 = days_until_year(year) + days_until_months_since_years(year, month) as isize + day as isize;
     let date2 = days_until_year(y) + days_until_months_since_years(y, m) as isize + d as isize;
-    (date2 - date1).abs() as usize
+    (date2 - date1 - 1).abs() as usize
 }
 
 /// 蔡勒公式(Zellers Kongruenz)
@@ -99,7 +131,6 @@ pub fn get_curr_week_since_this_year(year: isize, month: usize, day: usize) -> u
         (temp / 7) as usize
     }
 }
-
 
 pub mod lunar_cal {
     /// DATA FROM https://blog.csdn.net/qq_41146650/article/details/102876334

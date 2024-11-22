@@ -4,7 +4,8 @@ mod calc_time;
 
 fn main() {
     // let time_infos = calc_time::time_info("2024-11-18");
-    // println!("time info: {time_infos}");
+    let time_infos = calc_time::time_info("2021-2-13");
+    println!("time info: {time_infos}");
     // println!("Week {}, left {} day(s) this year, {} day(s) after is spring festival", );
 
     // println!("{}", get_curr_week_since_this_year(2024, 1, 7));
