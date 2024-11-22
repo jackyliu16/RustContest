@@ -44,6 +44,13 @@ pub fn days_until_months_since_years(year: isize, month: usize) -> usize {
     days
 }
 
+/// 计算两个不同 Date 中的差距
+pub fn how_many_days_between((year, month, day): (isize, usize, usize), (y, m, d): (isize, usize, usize)) -> usize {
+    let date1 = days_until_year(year) + days_until_months_since_years(year, month) as isize + day as isize;
+    let date2 = days_until_year(y) + days_until_months_since_years(y, m) as isize + d as isize;
+    (date2 - date1).abs() as usize
+}
+
 /// 蔡勒公式(Zellers Kongruenz)
 /// https://zh.wikipedia.org/wiki/%E8%94%A1%E5%8B%92%E5%85%AC%E5%BC%8F
 /// w = \left ( y + \left[\frac{y}{4}\right] + \left[\frac{c}{4}\right] - 2c + \left[\frac{26(m+1)}{10}\right] +d -1 \right ) \bmod 7
