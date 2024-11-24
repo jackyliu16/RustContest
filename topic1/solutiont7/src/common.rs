@@ -1,17 +1,21 @@
 use std::{env, fs};
 use std::collections::HashMap;
+use std::fs::File;
+use std::io::Read;
+use std::path::PathBuf;
 use serde_json::Value;
 use crate::error::ParseError;
 
 // check if region correct
 // TODO(OPTIMIZE): use some other ways to remove io operation each time
 pub fn region_legitimacy_check<'a>(region: &'a str) -> Result<String, ParseError> {
-    let path = env::current_dir()
-        .expect("Cannot access current working directory")
-        .join("region.json");
-    dbg!(&path);
+    let manifest_path = std::env::var("CARGO_MANIFEST_DIR").unwrap();
+    let data_path = PathBuf::from(manifest_path).join("region.json");
 
-    let data = fs::read_to_string(&path).unwrap();
+    let mut file = File::open(data_path).unwrap();
+    let mut data = String::new();
+    file.read_to_string(&mut data);
+    
     let json_data: Value = serde_json::from_str(&data).unwrap();
     let map: HashMap<String, String> = serde_json::from_value(json_data).unwrap();
 
