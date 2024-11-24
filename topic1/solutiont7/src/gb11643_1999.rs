@@ -35,8 +35,8 @@ impl FromStr for GB11643_1999 {
         }
 
         let city_name =  region_legitimacy_check(&s[..6])?;
-        let birth_day = get_birth_day_with_legitimacy_check(&s[6..12])?;
-        let sex = if &s[17..].parse().unwrap() % 2 != 0 { true } else { false };
+        let birth_day = get_birth_day_with_legitimacy_check(&s[6..14])?;
+        let sex = if &s[16..17].parse().unwrap() % 2 != 0 { true } else { false };
 
         if ! validate_checksum(&s) {
            return Err(ParseError::CheckSumInvalid(s.to_string()))
@@ -54,8 +54,8 @@ fn get_birth_day_with_legitimacy_check<'a>(birth: &'a str) -> Result<String, Par
     if birth.len() != 8 { return Err(ParseError::LengthNotCoincide(birth.to_string())); }
     let (year, month, day): (usize, usize, usize) = (
         birth[..4].parse::<usize>().unwrap(),
-        birth[5..6].parse::<usize>().unwrap(),
-        birth[7..].parse::<usize>().unwrap(),
+        birth[4..6].parse::<usize>().unwrap(),
+        birth[6..].parse::<usize>().unwrap(),
     );
 
     if  (year < 1900 || year >= (chrono::Utc::now().year() + 1) as usize) ||
@@ -96,6 +96,19 @@ fn validate_checksum(id: &str) -> bool {
 #[cfg(test)]
 mod tests { // DATA FROM https://www.cnblogs.com/linus-tan/p/7111797.html
     use super::*;
+
+    #[test]
+    fn birth_day_valid() {
+        assert_eq!(get_birth_day_with_legitimacy_check(&"820325"), Ok(String::from("1982年03月25日")));
+        assert_eq!(get_birth_day_with_legitimacy_check(&"881105"), Ok(String::from("1988年11月05日")))
+    }
+    
+    #[test]
+    fn birth_day_invalid() {
+        assert_eq!(get_birth_day_with_legitimacy_check(&"821325"), Err(ParseError::BirthDayFormat(String::from("821325"))));
+        assert_eq!(get_birth_day_with_legitimacy_check(&"880229"), Err(ParseError::BirthDayFormat(String::from("880229"))));
+        assert_eq!(get_birth_day_with_legitimacy_check(&"200229"), Err(ParseError::BirthDayFormat(String::from("200229"))));
+    }
 
     #[test]
     fn id_checksum_valid() {
