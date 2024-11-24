@@ -1,5 +1,9 @@
 // src/tests.rs
 mod identity_card;
+mod common;
+mod error;
+mod gb11643_1989;
+mod gb11643_1999;
 
 #[cfg(test)]
 mod tests {
