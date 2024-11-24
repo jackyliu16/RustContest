@@ -1,10 +1,17 @@
 // src/tests.rs
 mod retirement;
+mod types;
+mod rules;
+mod date;
 
 #[cfg(test)]
 mod tests {
     use super::retirement::retire_time;
+    use super::date::Date;
     use std::time::{Instant, Duration};
+    use crate::rules;
+    use crate::rules::{CombinedRules, RetirementRules};
+    use crate::types::PersonnelCategory;
 
     // 定义测试用例和预期结果
     const TEST_CASES: &[(&str, &str, &str)] = &[
@@ -36,5 +43,79 @@ mod tests {
         }
         println!("Total score: {:.2}", total_score);
         assert_eq!(100.00, total_score);
+    }
+
+    #[test]
+    fn date_add() {
+        assert_eq!(
+            Date::new(2002, 4) + Date::new(60, 3),
+            Date::new(2062, 7)
+        );
+        assert_eq!(
+            Date::new(2002, 4) + Date::new(60, 10),
+            Date::new(2063, 2)
+        );
+        assert_eq!(
+            Date::new(2002, 4) + Date::new(0, 13),
+            Date::new(2003, 5)
+        );
+    }
+    #[test]
+    fn date_sub() {
+        assert_eq!(
+            Date::new(2062, 7) -
+            Date::new(60, 3),
+            Date::new(2002, 4)
+        );
+        assert_eq!(
+            Date::new(2063, 2) -
+            Date::new(60, 10),
+            Date::new(2002, 4)
+        );
+        assert_eq!(
+            Date::new(2003, 5) -
+            Date::new(2002, 4),
+            Date::new(1, 1),
+        );
+    }
+
+    #[test]
+    fn working_date_curr() {
+        let calculator = CombinedRules { rules: vec![ Box::new(rules::Rules1978) ] };
+        let date = Date::new(2002, 04);
+        assert_eq!(Some(Date::new_abs(60, 0)), calculator.calculate_working_date(&date, &PersonnelCategory::Man));
+        assert_eq!(Some(Date::new_abs(55, 0)), calculator.calculate_working_date(&date, &PersonnelCategory::FemaleCadres));
+        assert_eq!(Some(Date::new_abs(50, 0)), calculator.calculate_working_date(&date, &PersonnelCategory::FemaleWorkers));
+    }
+
+    #[test]
+    fn working_date_2024_right() {
+        let date = Date::new(2002, 04);
+        assert_eq!(Some(Date::new(3, 1)), rules::Rules20240913.calculate_working_date(&date, &PersonnelCategory::Man));
+        assert_eq!(Some(Date::new(5, 1)), rules::Rules20240913.calculate_working_date(&date, &PersonnelCategory::FemaleWorkers));
+        assert_eq!(Some(Date::new(3, 1)), rules::Rules20240913.calculate_working_date(&date, &PersonnelCategory::FemaleCadres));
+    }
+    #[test]
+    fn working_date_2024_left() {
+        let date = Date::new(1960, 04);
+        assert_eq!(None, rules::Rules20240913.calculate_working_date(&date, &PersonnelCategory::Man));
+        assert_eq!(None, rules::Rules20240913.calculate_working_date(&date, &PersonnelCategory::FemaleWorkers));
+        assert_eq!(None, rules::Rules20240913.calculate_working_date(&date, &PersonnelCategory::FemaleCadres));
+    }
+
+    #[test]
+    fn working_date_2024_mid_man() {
+        assert_eq!(Some(Date::new_abs(0, 4)), rules::Rules20240913.calculate_working_date(&Date::new(1966,  1), &PersonnelCategory::Man));
+        assert_eq!(Some(Date::new_abs(0, 4)), rules::Rules20240913.calculate_working_date(&Date::new(1966,  2), &PersonnelCategory::Man));
+        assert_eq!(Some(Date::new_abs(0, 4)), rules::Rules20240913.calculate_working_date(&Date::new(1966,  3), &PersonnelCategory::Man));
+        assert_eq!(Some(Date::new_abs(0, 4)), rules::Rules20240913.calculate_working_date(&Date::new(1966,  4), &PersonnelCategory::Man));
+    }
+    #[test]
+    fn working_date_mix_mid_man() {
+        let calculator = CombinedRules { rules: vec![ Box::new(rules::Rules20240913), Box::new(rules::Rules1978) ] };
+        assert_eq!(Some(Date::new(2026, 5)), calculator.calculate_working_date(&Date::new(1966,  1), &PersonnelCategory::Man));
+        assert_eq!(Some(Date::new(2026, 6)), calculator.calculate_working_date(&Date::new(1966,  2), &PersonnelCategory::Man));
+        assert_eq!(Some(Date::new(2026, 7)), calculator.calculate_working_date(&Date::new(1966,  3), &PersonnelCategory::Man));
+        assert_eq!(Some(Date::new(2026, 8)), calculator.calculate_working_date(&Date::new(1966,  4), &PersonnelCategory::Man));
     }
 }
