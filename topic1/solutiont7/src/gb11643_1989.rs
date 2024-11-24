@@ -35,7 +35,6 @@ impl FromStr for GB11643_1989 {
         let birth_day = get_birth_day_with_legitimacy_check(&s[6..12])?;
         let sex = if &s[14..].parse().unwrap() % 2 != 0 { true } else { false };
 
-        dbg!(sex);
         Ok(Self {
             region: city_name.to_string(),
             birth_day,
