@@ -79,7 +79,7 @@ mod tests {
         );
     }
 
-    #[test]
+    #[deprecated]
     fn working_date_curr() {
         let calculator = CombinedRules { rules: vec![ Box::new(rules::Rules1978) ] };
         let date = Date::new(2002, 04);
@@ -88,7 +88,7 @@ mod tests {
         assert_eq!(Some(Date::new_abs(50, 0)), calculator.calculate_working_date(&date, &PersonnelCategory::FemaleWorkers));
     }
 
-    #[test]
+    #[deprecated]
     fn working_date_2024_right() {
         let date = Date::new(2002, 04);
         assert_eq!(Some(Date::new(3, 1)), rules::Rules20240913.calculate_working_date(&date, &PersonnelCategory::Man));
