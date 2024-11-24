@@ -5,10 +5,3 @@ pub fn check_id_card(id_card_no: &str) -> String {
     println!("{}", gb.unwrap());
     String::new()
 }
-
-pub trait IdentityCard {
-    fn get_region() -> &'static str;
-    fn get_birth_date() -> &'static str;
-    fn get_order() -> &'static str;
-    fn check() -> bool;
-}

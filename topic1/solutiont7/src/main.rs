@@ -1,7 +1,8 @@
 mod error;
-mod gb11643_1999;
+mod common;
 mod identity_card;
 mod gb11643_1989;
+mod gb11643_1999;
 
 fn main() {
     // let id_no = "370725 881105 149";
