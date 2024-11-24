@@ -29,6 +29,8 @@
                   extensions = [ "rust-src" "llvm-tools-preview" "rustfmt" "clippy" "cargo" ];
                   targets = [ "x86_64-unknown-linux-gnu" ];
                 });
+            pythonEnv = pkgs.python310.withPackages (pkgs: [
+            ]);
           })
         ];
         pkgs = import nixpkgs {
@@ -52,6 +54,7 @@
             fzf
 
             rust-toolchain
+            pythonEnv
           ];
 
           shellHook = ''
