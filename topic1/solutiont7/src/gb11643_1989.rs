@@ -4,12 +4,16 @@ use std::str::FromStr;
 use chrono::Datelike;
 use crate::common::{how_many_days_of_this_month, region_legitimacy_check};
 use crate::error::ParseError;
+use crate::gb11643_1999::GB11643_1999;
+use crate::identity_card::GB11643;
 
 pub struct GB11643_1989 {
     region: String,   // 6 [0..5]
     birth_day: String,          // 6 [6..12]
     sex: bool,          // Man True
 }
+
+impl GB11643 for GB11643_1989 { }
 
 impl std::fmt::Display for GB11643_1989 {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {

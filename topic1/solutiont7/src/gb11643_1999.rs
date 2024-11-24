@@ -1,13 +1,25 @@
+use std::fmt::Formatter;
 use std::str::FromStr;
 use chrono::Datelike;
 use crate::common::{how_many_days_of_this_month, region_legitimacy_check};
 use crate::error::ParseError;
+use crate::identity_card::GB11643;
 
 pub struct GB11643_1999 {
     region: String,
     birth_day: String,
     sex: bool,
 }
+
+impl GB11643 for GB11643_1999 { }
+
+impl std::fmt::Display for GB11643_1999 {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        let sex = if self.sex { "男" } else { "女" };
+        write!(f, "{},{},{}", sex, self.birth_day, self.region)
+    }
+}
+
 
 impl FromStr for GB11643_1999 {
     type Err = ParseError;
@@ -25,9 +37,9 @@ impl FromStr for GB11643_1999 {
         let city_name =  region_legitimacy_check(&s[..6])?;
         let birth_day = get_birth_day_with_legitimacy_check(&s[6..12])?;
         let sex = if &s[17..].parse().unwrap() % 2 != 0 { true } else { false };
-        
+
         if ! validate_checksum(&s) {
-           return Err(ParseError::CheckSumInvalid(s.to_string())) 
+           return Err(ParseError::CheckSumInvalid(s.to_string()))
         }
 
         Ok(Self {
@@ -51,7 +63,7 @@ fn get_birth_day_with_legitimacy_check<'a>(birth: &'a str) -> Result<String, Par
         (day >= how_many_days_of_this_month(year as isize, month)) {
         return Err(ParseError::BirthDayFormat(birth.to_string()))
     }
-    
+
     Ok(format!("{}年{:02}月{:02}日", year, month, day))
 }
 
@@ -82,7 +94,7 @@ fn validate_checksum(id: &str) -> bool {
 }
 
 #[cfg(test)]
-mod tests {
+mod tests { // DATA FROM https://www.cnblogs.com/linus-tan/p/7111797.html
     use super::*;
 
     #[test]
