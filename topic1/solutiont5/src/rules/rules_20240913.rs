@@ -19,7 +19,7 @@ const MAN_DELAY_START: isize = 1965;
 const MAN_DELAY_END: isize = 1977;
 const FEMALE_WORKERS_DELAY_START: isize = 1975;
 const FEMALE_WORKERS_DELAY_END: isize = 1985;
-const FEMALE_CADRES_DELAY_START: isize = 1975;
+const FEMALE_CADRES_DELAY_START: isize = 1970;
 const FEMALE_CADRES_DELAY_END: isize = 1982;
 
 impl RetirementRules for Rules20240913 {
@@ -37,14 +37,14 @@ impl RetirementRules for Rules20240913 {
                 if date.year >= FEMALE_CADRES_DELAY_END { return Some(Date::new_abs(3, 0))}
 
                 let diff = difference_between_birth_time_and_calibration_time(date, FEMALE_CADRES_DELAY_START);
-                Some(Date::new_abs(0, (diff / 2) as isize + 1))
+                Some(Date::new_abs(0, (diff / 4) as isize + 1))
             },
             PersonnelCategory::FemaleWorkers => {
                 if date.year < FEMALE_WORKERS_DELAY_START { return None}
                 if date.year >= FEMALE_WORKERS_DELAY_END { return Some(Date::new_abs(5, 0))}
 
                 let diff = difference_between_birth_time_and_calibration_time(date, FEMALE_WORKERS_DELAY_START);
-                Some(Date::new_abs(0, (diff / 4) as isize + 1))
+                Some(Date::new_abs(0, (diff / 2) as isize + 1))
             },
         }
     }

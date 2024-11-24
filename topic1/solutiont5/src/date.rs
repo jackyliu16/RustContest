@@ -1,6 +1,6 @@
 use std::str::FromStr;
 
-#[derive(Debug, PartialEq, Eq)]
+#[derive(Debug, PartialEq, Eq, Clone, Copy)]
 pub struct Date {
     pub year: isize,
     pub month: isize,
@@ -83,5 +83,17 @@ impl std::ops::Sub for Date {
             month += 12;
         }
         Self { year, month }
+    }
+}
+
+impl From<Date> for f32 {
+    fn from(value: Date) -> Self {
+       value.year as f32 + value.month as f32 / 12_f32
+    }
+}
+
+impl From<Date> for usize {
+    fn from(value: Date) -> Self {
+        (value.year * 12 + value.month) as usize
     }
 }

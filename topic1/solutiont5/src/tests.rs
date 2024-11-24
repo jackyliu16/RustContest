@@ -16,15 +16,15 @@ mod tests {
     // 定义测试用例和预期结果
     const TEST_CASES: &[(&str, &str, &str)] = &[
         ("1971-04", "原法定退休年龄55周岁女职工", "2026-08,55.33,4"),
+        ("1965-12", "男职工", "2026-03,60.25,3"),
+        ("1965-01", "男职工", "2025-02,60.08,1"),
         ("1995-12", "原法定退休年龄50周岁女职工", "2050-12,55,60"),
         ("1995-12", "男职工", "2058-12,63,36"),
         ("2000-12", "原法定退休年龄55周岁女职工", "2058-12,58,36"),
         ("2000-12", "男职工", "2063-12,63,36"),
-        ("1965-12", "男职工", "2026-03,60.25,3"),
         ("1963-12", "男职工", "2023-12,60,0"),
         ("1963-04", "原法定退休年龄55周岁女职工", "2018-04,55,0"),
         ("1964-02", "男职工", "2024-02,60,0"),
-        ("1965-01", "男职工", "2025-02,60.08,1"),
     ];
 
     // 定义一个测试函数来验证每个测试用例
@@ -117,5 +117,27 @@ mod tests {
         assert_eq!(Some(Date::new(2026, 6)), calculator.calculate_working_date(&Date::new(1966,  2), &PersonnelCategory::Man));
         assert_eq!(Some(Date::new(2026, 7)), calculator.calculate_working_date(&Date::new(1966,  3), &PersonnelCategory::Man));
         assert_eq!(Some(Date::new(2026, 8)), calculator.calculate_working_date(&Date::new(1966,  4), &PersonnelCategory::Man));
+    }
+
+    #[test]
+    fn test_testcases() {
+        let calculator = CombinedRules { rules: vec![ Box::new(rules::Rules20240913), Box::new(rules::Rules1978) ] };
+        assert_eq!(calculator.calculate_working_date(&Date::new(1971,04), &PersonnelCategory::FemaleCadres), Some(Date::new(2026,08)));
+        assert_eq!(calculator.calculate_working_date(&Date::new(1995,12), &PersonnelCategory::FemaleWorkers), Some(Date::new(2050,12)));
+        assert_eq!(calculator.calculate_working_date(&Date::new(2000,12), &PersonnelCategory::FemaleCadres), Some(Date::new(2058,12)));
+        assert_eq!(calculator.calculate_working_date(&Date::new(1963,04), &PersonnelCategory::FemaleCadres), Some(Date::new(2018,04)));
+        assert_eq!(calculator.calculate_working_date(&Date::new(1995,12), &PersonnelCategory::Man), Some(Date::new(2058,12)));
+        assert_eq!(calculator.calculate_working_date(&Date::new(2000,12), &PersonnelCategory::Man), Some(Date::new(2063,12)));
+        assert_eq!(calculator.calculate_working_date(&Date::new(1965,12), &PersonnelCategory::Man), Some(Date::new(2026,03)));
+        assert_eq!(calculator.calculate_working_date(&Date::new(1963,12), &PersonnelCategory::Man), Some(Date::new(2023,12)));
+        assert_eq!(calculator.calculate_working_date(&Date::new(1964,02), &PersonnelCategory::Man), Some(Date::new(2024,02)));
+        assert_eq!(calculator.calculate_working_date(&Date::new(1965,01), &PersonnelCategory::Man), Some(Date::new(2025,02)));
+    }
+
+    fn test_for_date_convert() {
+        let date1 = Date::new(1971, 4);
+        let date2 = Date::new(2026, 8);
+        let retire_age_1: f32 = (date2 - date1).into();
+        // assert_eq!(retire_age_1, 55.33);
     }
 }
