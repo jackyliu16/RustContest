@@ -6,12 +6,49 @@ use std::path::PathBuf;
 use std::str::FromStr;
 
 pub fn converter(input: &str, tp: &str) -> String {
-    let map = get_map_from_file(TranslationType::from_str(tp).unwrap()).unwrap();
-    let mut out: Vec<char> = Vec::new();
-    for c in input.chars() {
-       out.push(map.get(&c.to_string()).unwrap_or(&c.to_string()).parse().unwrap());
+    dbg!(input);
+    if tp == "t2s" {
+        dbg!("t2s");
+        let mut ts_phrases_map = get_map_from_file(TranslationType::Traditional2Simple, "TSPhrases.txt".into()).unwrap();
+        if let Some(value) = ts_phrases_map.get(input.into()) {
+            println!("directly");
+            return value.clone();
+        }
+
+        let char_map = get_map_from_file(TranslationType::Simple2Traditional, "TSCharacters.txt".into()).unwrap();
+        return input
+            .to_string()
+            .chars()
+            .map(|c| { char_map.get(&c.to_string()).unwrap_or(&c.to_string()).clone() })
+            .collect::<String>()
+    } else {
+        dbg!("s2t");
+        let mut phrases_map = get_map_from_file(TranslationType::Simple2Traditional, "TSPhrases.txt".into()).unwrap();
+        let ts_phrases_map = get_map_from_file(TranslationType::Simple2Traditional, "STPhrases.txt".into()).unwrap();
+        for (k, v) in ts_phrases_map { // TODO Combine
+            phrases_map.insert(k.into(), v.into());
+        }
+
+        let hk_char_map = get_map_from_file(TranslationType::Simple2Traditional, "STCharacters.txt".into()).unwrap();
+        let tw_char_map = get_map_from_file(TranslationType::Simple2Traditional, "TWVariants.txt".into()).unwrap();
+        if let Some(value) =  phrases_map.get(input.into()) {
+            println!("directly");
+            return value
+                .clone()
+                .chars()
+                .map(|c| tw_char_map.get(&c.to_string()).unwrap_or(&c.to_string()).clone())
+                .collect::<String>()
+        }
+
+        return input
+            .to_string()
+            .chars()
+            .map(|c| { hk_char_map.get(&c.to_string()).unwrap_or(&c.to_string()).clone()})
+            // .map(|c| { println!("{}", &c); c})
+            // .map(|c| { tw_char_map.get(&c).unwrap_or(&c).clone() })
+            .collect::<String>()
     }
-    out.iter().collect()
+    String::new()
 }
 
 enum TranslationType {
@@ -30,42 +67,23 @@ impl FromStr for TranslationType {
     }
 }
 
-fn get_map_from_file(types: TranslationType) -> io::Result<HashMap<String, String>> {
-    let files = match types {
-        TranslationType::Simple2Traditional => { vec![
-            "STCharacters.txt",
-            "STPhrases.txt",
-        ]},
-        TranslationType::Traditional2Simple => { vec![
-            "TSCharacters.txt",
-            "TSPhrases.txt"
-        ]},
-    };
+fn get_map_from_file(types: TranslationType, path: String) -> io::Result<HashMap<String, String>> {
     let manifest_path = std::env::var("CARGO_MANIFEST_DIR").unwrap();
-    let mut map: HashMap<String, String> = HashMap::new();
-    for file in files {
-        let path = PathBuf::from(&manifest_path).join("dict").join(file);
-        dbg!(&path);
-
-        let mut file = File::open(path)?;
-
-        let reader = BufReader::new(file);
-        for line in reader.lines() {
-            let line = line?;
-            let line = line.split_whitespace().collect::<Vec<&str>>();
-            let s = line[0];
-            let t = if line.len() == 3 {
-                line[2]
-            } else {
-                line[1]
-            };
-            match types {
-                TranslationType::Traditional2Simple => { map.insert(t.to_string(), s.to_string()); }
-                TranslationType::Simple2Traditional => { map.insert(s.to_string(), t.to_string()); }
+    let path = PathBuf::from(manifest_path).join("dict").join(path);
+    let file = File::open(path)?;
+    let reader = BufReader::new(file);
+    let mut map = HashMap::new();
+    for line in reader.lines() {
+        let line = line?;
+        let line = line.split_whitespace().collect::<Vec<&str>>();
+        match types {
+            TranslationType::Simple2Traditional => {
+                map.insert(line[0].to_string(), line[1].to_string());
+            },
+            TranslationType::Traditional2Simple => {
+                map.insert(line[1].to_string(), line[0].to_string());
             }
         }
-
     }
-
     Ok(map)
 }
