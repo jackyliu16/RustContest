@@ -69,12 +69,8 @@ impl<'de> Deserialize<'de> for InnerData {
 }
 
 pub fn count_provinces() -> String {
-    let path = env::current_dir()
-        .expect("Cannot access current working directory")
-        .parent()
-        .expect("Cannot get parent directory of current working directory")
-        .join("solutiont2")
-        .join("district.json");
+    let manifest_path = std::env::var("CARGO_MANIFEST_DIR").unwrap();
+    let path = PathBuf::from(manifest_path).join("district.json");
 
     let data = fs::read_to_string(&path).unwrap();
     let json_data: Data = serde_json::from_str(&data).unwrap();
