@@ -1,4 +1,6 @@
 use crate::date::Date;
+use crate::retirement::date::Date;
+use crate::retirement::types::PersonnelCategory;
 use crate::rules::RetirementRules;
 use crate::types::PersonnelCategory;
 

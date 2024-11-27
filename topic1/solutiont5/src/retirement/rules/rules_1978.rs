@@ -1,6 +1,6 @@
-use crate::date::Date;
-use crate::rules::RetirementRules;
-use crate::types::PersonnelCategory;
+use crate::retirement::date::Date;
+use crate::retirement::rules::RetirementRules;
+use crate::retirement::types::PersonnelCategory;
 
 pub struct Rules1978;
 

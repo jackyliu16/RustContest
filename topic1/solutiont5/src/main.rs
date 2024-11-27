@@ -1,12 +1,4 @@
-use crate::date::Date;
-use crate::rules::{CombinedRules, RetirementRules};
-use crate::types::PersonnelCategory;
-
 mod retirement;
-mod date;
-mod rules;
-mod types;
-
 fn main() {
     // ("1995-12", "原法定退休年龄50周岁女职工", "2050-12,55,60"),
     // ("1971-04", "原法定退休年龄55周岁女职工", "2026-08,55.33,4"),

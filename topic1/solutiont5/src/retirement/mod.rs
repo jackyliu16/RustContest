@@ -5,10 +5,13 @@
 - 原法定退休年龄为五十周岁的女职工，
     - 法定退休年龄**每二个月延迟一个月**，**逐步延迟至五十五周岁**。
 */
-use crate::date::Date;
-use crate::rules;
-use crate::rules::{CombinedRules, RetirementRules};
-use crate::types::PersonnelCategory;
+use crate::retirement::date::Date;
+use crate::retirement::rules::{CombinedRules, RetirementRules};
+use crate::retirement::types::PersonnelCategory;
+
+mod date;
+mod types;
+mod rules;
 
 pub fn retire_time(time: &str, tp: &str) -> String {
     // ("1971-04", "原法定退休年龄55周岁女职工", "2026-08,55.33,4"),
