@@ -1,9 +1,11 @@
 use std::fmt::Display;
 use std::str::FromStr;
-use super::gb11643_1989::GB11643_1989;
-use super::gb11643_1999::GB11643_1999;
-use serde_json::to_string;
-use crate::error::{ParseError};
+use gb11643_1989::GB11643_1989;
+use gb11643_1999::GB11643_1999;
+mod common;
+mod error;
+mod gb11643_1989;
+mod gb11643_1999;
 
 pub fn check_id_card(id_card_no: &str) -> String {
     match id_card_no.len() {

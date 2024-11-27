@@ -4,7 +4,7 @@ use std::fs::File;
 use std::io::Read;
 use std::path::PathBuf;
 use serde_json::Value;
-use crate::error::ParseError;
+use crate::identity_card::error::ParseError;
 
 // check if region correct
 // TODO(OPTIMIZE): use some other ways to remove io operation each time

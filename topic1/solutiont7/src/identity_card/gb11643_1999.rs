@@ -1,8 +1,8 @@
 use std::fmt::Formatter;
 use std::str::FromStr;
 use chrono::Datelike;
-use crate::common::{how_many_days_of_this_month, region_legitimacy_check};
-use crate::error::ParseError;
+use crate::identity_card::common::{how_many_days_of_this_month, region_legitimacy_check};
+use crate::identity_card::error::ParseError;
 use crate::identity_card::GB11643;
 
 pub struct GB11643_1999 {

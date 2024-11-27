@@ -1,14 +1,10 @@
 // src/tests.rs
 mod identity_card;
-mod common;
-mod error;
-mod gb11643_1989;
-mod gb11643_1999;
 
 #[cfg(test)]
 mod tests {
-    use super::identity_card::check_id_card;
-    use std::time::{Instant, Duration};
+    use std::time::{Duration, Instant};
+    use crate::identity_card::check_id_card;
 
     // 定义测试用例和预期结果
     // 申明：随机生成的测试身份证号，仅限测试使用，任何人不得盗用，违者按法律严惩！

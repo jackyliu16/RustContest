@@ -2,10 +2,10 @@ use std::error::Error;
 use std::fmt::Formatter;
 use std::str::FromStr;
 use chrono::Datelike;
-use crate::common::{how_many_days_of_this_month, region_legitimacy_check};
-use crate::error::ParseError;
-use crate::gb11643_1999::GB11643_1999;
+use crate::identity_card::common::{how_many_days_of_this_month, region_legitimacy_check};
+use crate::identity_card::error::ParseError;
 use crate::identity_card::GB11643;
+use crate::identity_card::gb11643_1999::GB11643_1999;
 
 pub struct GB11643_1989 {
     region: String,   // 6 [0..5]
