@@ -1,8 +1,6 @@
-use crate::date::Date;
 use crate::retirement::date::Date;
+use crate::retirement::rules::RetirementRules;
 use crate::retirement::types::PersonnelCategory;
-use crate::rules::RetirementRules;
-use crate::types::PersonnelCategory;
 
 /// 《 全国人民代表大会常务委员会关于实施渐进式延迟法定退休年龄的决定 》
 /// https://www.gov.cn/yaowen/liebiao/202409/content_6974294.htm
@@ -11,7 +9,6 @@ use crate::types::PersonnelCategory;
 /// - 原法定退休年龄为五十周岁的女职工，
 ///     - 法定退休年龄**每二个月延迟一个月**，**逐步延迟至五十五周岁**。
 pub struct Rules20240913;
-
 
 const MAN_DELAY_MAX_LIMIT: isize = 63;
 const FEMALE_WORKERS_DELAY_MAX_LIMIT: isize = 55;

@@ -1,10 +1,9 @@
-use crate::date::Date;
-use crate::types::PersonnelCategory;
-
 mod rules_20240913;
 pub use rules_20240913::Rules20240913;
 mod rules_1978;
 pub use rules_1978::Rules1978;
+use crate::retirement::date::Date;
+use crate::retirement::types::PersonnelCategory;
 
 pub trait RetirementRules {
     fn calculate_working_date(&self, date: &Date, types: &PersonnelCategory) -> Option<Date>; // working date
