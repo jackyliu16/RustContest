@@ -86,6 +86,7 @@ pub fn count_provinces() -> String {
         }
     }
 
+    dbg!(&turns);
     turns.iter()
         .map(|turn| count_connected_components(turn).to_string())
         .collect::<Vec<String>>()
@@ -97,11 +98,15 @@ fn count_connected_components<'a>(graph: &'a HashMap<&'a str, Vec<&'a str>>) -> 
     let mut visited: HashSet<&'a str> = HashSet::new();
     let mut count = 0;
     for &node in graph.keys() {
+        dbg!(format!("start visiting {}", node));
+        dbg!(&graph[node]);
+        // FIXME: 面對第一次迭代不呈現關係，但是在第二次中呈現關係的情況無法解決。
         if !visited.contains(node) && graph[node].iter().all(|item| !visited.contains(item)) {
             count += 1;
             dfs(node, graph, &mut visited);
         }
     }
+    dbg!(&count);
     count
 }
 
