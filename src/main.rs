@@ -1,7 +1,7 @@
-use std::sync::Arc;
-use std::{process::Command, sync::Mutex};
 use serde::{Deserialize, Serialize};
 use std::fs;
+use std::sync::Arc;
+use std::{process::Command, sync::Mutex};
 
 #[derive(Deserialize, Debug)]
 pub struct ExerciseList {
@@ -26,26 +26,23 @@ pub struct ExerciseStatistics {
 // 统计列表
 #[derive(Deserialize, Serialize, Debug)]
 pub struct ExerciseCheckList {
-    pub statistics: ExerciseStatistics
+    pub statistics: ExerciseStatistics,
 }
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
-
     let toml_str = &fs::read_to_string("info.toml").unwrap();
     let exercises = toml::from_str::<ExerciseList>(toml_str).unwrap().exercises;
 
     // 得分统计
-    let exercise_check_list = Arc::new(Mutex::new(
-        ExerciseCheckList {
-            statistics: ExerciseStatistics {
-                total_exercations: 100,
-                total_succeeds: 0,
-                total_failures: 0,
-                total_time: 0,
-            }
-        }
-    ));
+    let exercise_check_list = Arc::new(Mutex::new(ExerciseCheckList {
+        statistics: ExerciseStatistics {
+            total_exercations: 100,
+            total_succeeds: 0,
+            total_failures: 0,
+            total_time: 0,
+        },
+    }));
 
     // 异步执行所有测试
     let mut tasks = Vec::new();
@@ -53,7 +50,11 @@ async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
     for exercise in exercises {
         let exercise_check_list_ref = Arc::clone(&exercise_check_list);
         let score = exercise.score;
-        fs::write(format!("topic1/{}/src/tests.rs", exercise.path), exercise.test).unwrap();
+        fs::write(
+            format!("topic1/{}/src/tests.rs", exercise.path),
+            exercise.test,
+        )
+        .unwrap();
         let task = tokio::task::spawn(async move {
             run_test(&exercise.path, score, Arc::clone(&exercise_check_list_ref)).await
         });
@@ -70,7 +71,11 @@ async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
 }
 
 // 异步执行测试代码
-async fn run_test(key: &str, score: u32, exercise_check_list: Arc<Mutex<ExerciseCheckList>>) -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
+async fn run_test(
+    key: &str,
+    score: u32,
+    exercise_check_list: Arc<Mutex<ExerciseCheckList>>,
+) -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
     // 构建各环境命令
     let output = if cfg!(target_os = "windows") {
         Command::new("cmd")
