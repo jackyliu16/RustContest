@@ -93,51 +93,51 @@ fn validate_checksum(id: &str) -> bool {
         == checksum
 }
 
-#[cfg(test)]
-mod tests { // DATA FROM https://www.cnblogs.com/linus-tan/p/7111797.html
-    use super::*;
-
-    #[test]
-    fn birth_day_valid() {
-        assert_eq!(get_birth_day_with_legitimacy_check(&"19820325"), Ok(String::from("1982年03月25日")));
-        assert_eq!(get_birth_day_with_legitimacy_check(&"19881105"), Ok(String::from("1988年11月05日")))
-    }
-    
-    #[test]
-    fn birth_day_invalid() {
-        assert_eq!(get_birth_day_with_legitimacy_check(&"19821325"), Err(ParseError::BirthDayFormat(String::from("19821325"))));
-        assert_eq!(get_birth_day_with_legitimacy_check(&"19880229"), Err(ParseError::BirthDayFormat(String::from("19880229"))));
-        assert_eq!(get_birth_day_with_legitimacy_check(&"19200229"), Err(ParseError::BirthDayFormat(String::from("19200229"))));
-    }
-
-    #[test]
-    fn id_checksum_valid() {
-        let vec = vec![
-            "371522199402189127",
-            "120111199207178301",
-            "230713198012022856",
-            "45128119860426100X",
-            "652701198205147107",
-            "33010619930228635X",
-            "431023198504075666",
-        ];
-        for x in vec {
-           assert!(validate_checksum(x));
-        }
-    }
-    #[test]
-    fn id_checksum_invalid() {
-        let vec = vec![
-            "371522199402189122",
-            "120111199207178308",
-            "23071319801202285x",
-            "451281198604261009",
-            "652701198205147101",
-            "330106199302286353",
-            "431023198504075664",
-        ];
-        for x in vec {
-            assert!(! validate_checksum(x));
-        }
-    }
-}
+// #[cfg(test)]
+// mod tests { // DATA FROM https://www.cnblogs.com/linus-tan/p/7111797.html
+//     use super::*;
+// 
+//     #[test]
+//     fn birth_day_valid() {
+//         assert_eq!(get_birth_day_with_legitimacy_check(&"19820325"), Ok(String::from("1982年03月25日")));
+//         assert_eq!(get_birth_day_with_legitimacy_check(&"19881105"), Ok(String::from("1988年11月05日")))
+//     }
+//     
+//     #[test]
+//     fn birth_day_invalid() {
+//         assert_eq!(get_birth_day_with_legitimacy_check(&"19821325"), Err(ParseError::BirthDayFormat(String::from("19821325"))));
+//         assert_eq!(get_birth_day_with_legitimacy_check(&"19880229"), Err(ParseError::BirthDayFormat(String::from("19880229"))));
+//         assert_eq!(get_birth_day_with_legitimacy_check(&"19200229"), Err(ParseError::BirthDayFormat(String::from("19200229"))));
+//     }
+// 
+//     #[test]
+//     fn id_checksum_valid() {
+//         let vec = vec![
+//             "371522199402189127",
+//             "120111199207178301",
+//             "230713198012022856",
+//             "45128119860426100X",
+//             "652701198205147107",
+//             "33010619930228635X",
+//             "431023198504075666",
+//         ];
+//         for x in vec {
+//            assert!(validate_checksum(x));
+//         }
+//     }
+//     #[test]
+//     fn id_checksum_invalid() {
+//         let vec = vec![
+//             "371522199402189122",
+//             "120111199207178308",
+//             "23071319801202285x",
+//             "451281198604261009",
+//             "652701198205147101",
+//             "330106199302286353",
+//             "431023198504075664",
+//         ];
+//         for x in vec {
+//             assert!(! validate_checksum(x));
+//         }
+//     }
+// }

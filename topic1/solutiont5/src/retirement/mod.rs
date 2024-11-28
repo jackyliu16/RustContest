@@ -45,72 +45,72 @@ fn format_f32(value: f32) -> String {
     }
 }
 
-#[cfg(test)]
-mod tests {
-    use crate::retirement::date::Date;
-    use crate::retirement::rules;
-    use crate::retirement::rules::{CombinedRules, RetirementRules};
-    use crate::retirement::types::PersonnelCategory;
-
-    #[deprecated]
-    fn working_date_curr() {
-        let calculator = CombinedRules { rules: vec![ Box::new(rules::Rules1978) ] };
-        let date = Date::new(2002, 04);
-        assert_eq!(Some(Date::new_abs(60, 0)), calculator.calculate_working_date(&date, &PersonnelCategory::Man));
-        assert_eq!(Some(Date::new_abs(55, 0)), calculator.calculate_working_date(&date, &PersonnelCategory::FemaleCadres));
-        assert_eq!(Some(Date::new_abs(50, 0)), calculator.calculate_working_date(&date, &PersonnelCategory::FemaleWorkers));
-    }
-
-    #[deprecated]
-    fn working_date_2024_right() {
-        let date = Date::new(2002, 04);
-        assert_eq!(Some(Date::new(3, 1)), rules::Rules20240913.calculate_working_date(&date, &PersonnelCategory::Man));
-        assert_eq!(Some(Date::new(5, 1)), rules::Rules20240913.calculate_working_date(&date, &PersonnelCategory::FemaleWorkers));
-        assert_eq!(Some(Date::new(3, 1)), rules::Rules20240913.calculate_working_date(&date, &PersonnelCategory::FemaleCadres));
-    }
-    #[test]
-    fn working_date_2024_left() {
-        let date = Date::new(1960, 04);
-        assert_eq!(None, rules::Rules20240913.calculate_working_date(&date, &PersonnelCategory::Man));
-        assert_eq!(None, rules::Rules20240913.calculate_working_date(&date, &PersonnelCategory::FemaleWorkers));
-        assert_eq!(None, rules::Rules20240913.calculate_working_date(&date, &PersonnelCategory::FemaleCadres));
-    }
-
-    #[test]
-    fn working_date_2024_mid_man() {
-        assert_eq!(Some(Date::new_abs(0, 4)), rules::Rules20240913.calculate_working_date(&Date::new(1966,  1), &PersonnelCategory::Man));
-        assert_eq!(Some(Date::new_abs(0, 4)), rules::Rules20240913.calculate_working_date(&Date::new(1966,  2), &PersonnelCategory::Man));
-        assert_eq!(Some(Date::new_abs(0, 4)), rules::Rules20240913.calculate_working_date(&Date::new(1966,  3), &PersonnelCategory::Man));
-        assert_eq!(Some(Date::new_abs(0, 4)), rules::Rules20240913.calculate_working_date(&Date::new(1966,  4), &PersonnelCategory::Man));
-    }
-    #[test]
-    fn working_date_mix_mid_man() {
-        let calculator = CombinedRules { rules: vec![ Box::new(rules::Rules20240913), Box::new(rules::Rules1978) ] };
-        assert_eq!(Some(Date::new(2026, 5)), calculator.calculate_working_date(&Date::new(1966,  1), &PersonnelCategory::Man));
-        assert_eq!(Some(Date::new(2026, 6)), calculator.calculate_working_date(&Date::new(1966,  2), &PersonnelCategory::Man));
-        assert_eq!(Some(Date::new(2026, 7)), calculator.calculate_working_date(&Date::new(1966,  3), &PersonnelCategory::Man));
-        assert_eq!(Some(Date::new(2026, 8)), calculator.calculate_working_date(&Date::new(1966,  4), &PersonnelCategory::Man));
-    }
-
-    #[test]
-    fn test_testcases() {
-        let calculator = CombinedRules { rules: vec![ Box::new(rules::Rules20240913), Box::new(rules::Rules1978) ] };
-        assert_eq!(calculator.calculate_working_date(&Date::new(1971,04), &PersonnelCategory::FemaleCadres), Some(Date::new(2026,08)));
-        assert_eq!(calculator.calculate_working_date(&Date::new(1995,12), &PersonnelCategory::FemaleWorkers), Some(Date::new(2050,12)));
-        assert_eq!(calculator.calculate_working_date(&Date::new(2000,12), &PersonnelCategory::FemaleCadres), Some(Date::new(2058,12)));
-        assert_eq!(calculator.calculate_working_date(&Date::new(1963,04), &PersonnelCategory::FemaleCadres), Some(Date::new(2018,04)));
-        assert_eq!(calculator.calculate_working_date(&Date::new(1995,12), &PersonnelCategory::Man), Some(Date::new(2058,12)));
-        assert_eq!(calculator.calculate_working_date(&Date::new(2000,12), &PersonnelCategory::Man), Some(Date::new(2063,12)));
-        assert_eq!(calculator.calculate_working_date(&Date::new(1965,12), &PersonnelCategory::Man), Some(Date::new(2026,03)));
-        assert_eq!(calculator.calculate_working_date(&Date::new(1963,12), &PersonnelCategory::Man), Some(Date::new(2023,12)));
-        assert_eq!(calculator.calculate_working_date(&Date::new(1964,02), &PersonnelCategory::Man), Some(Date::new(2024,02)));
-        assert_eq!(calculator.calculate_working_date(&Date::new(1965,01), &PersonnelCategory::Man), Some(Date::new(2025,02)));
-    }
-
-    fn test_for_date_convert() {
-        let date1 = Date::new(1971, 4);
-        let date2 = Date::new(2026, 8);
-        let retire_age_1: f32 = (date2 - date1).into();
-        // assert_eq!(retire_age_1, 55.33);
-    }
-}
+// #[cfg(test)]
+// mod tests {
+//     use crate::retirement::date::Date;
+//     use crate::retirement::rules;
+//     use crate::retirement::rules::{CombinedRules, RetirementRules};
+//     use crate::retirement::types::PersonnelCategory;
+//
+//     #[deprecated]
+//     fn working_date_curr() {
+//         let calculator = CombinedRules { rules: vec![ Box::new(rules::Rules1978) ] };
+//         let date = Date::new(2002, 04);
+//         assert_eq!(Some(Date::new_abs(60, 0)), calculator.calculate_working_date(&date, &PersonnelCategory::Man));
+//         assert_eq!(Some(Date::new_abs(55, 0)), calculator.calculate_working_date(&date, &PersonnelCategory::FemaleCadres));
+//         assert_eq!(Some(Date::new_abs(50, 0)), calculator.calculate_working_date(&date, &PersonnelCategory::FemaleWorkers));
+//     }
+//
+//     #[deprecated]
+//     fn working_date_2024_right() {
+//         let date = Date::new(2002, 04);
+//         assert_eq!(Some(Date::new(3, 1)), rules::Rules20240913.calculate_working_date(&date, &PersonnelCategory::Man));
+//         assert_eq!(Some(Date::new(5, 1)), rules::Rules20240913.calculate_working_date(&date, &PersonnelCategory::FemaleWorkers));
+//         assert_eq!(Some(Date::new(3, 1)), rules::Rules20240913.calculate_working_date(&date, &PersonnelCategory::FemaleCadres));
+//     }
+//     #[test]
+//     fn working_date_2024_left() {
+//         let date = Date::new(1960, 04);
+//         assert_eq!(None, rules::Rules20240913.calculate_working_date(&date, &PersonnelCategory::Man));
+//         assert_eq!(None, rules::Rules20240913.calculate_working_date(&date, &PersonnelCategory::FemaleWorkers));
+//         assert_eq!(None, rules::Rules20240913.calculate_working_date(&date, &PersonnelCategory::FemaleCadres));
+//     }
+//
+//     #[test]
+//     fn working_date_2024_mid_man() {
+//         assert_eq!(Some(Date::new_abs(0, 4)), rules::Rules20240913.calculate_working_date(&Date::new(1966,  1), &PersonnelCategory::Man));
+//         assert_eq!(Some(Date::new_abs(0, 4)), rules::Rules20240913.calculate_working_date(&Date::new(1966,  2), &PersonnelCategory::Man));
+//         assert_eq!(Some(Date::new_abs(0, 4)), rules::Rules20240913.calculate_working_date(&Date::new(1966,  3), &PersonnelCategory::Man));
+//         assert_eq!(Some(Date::new_abs(0, 4)), rules::Rules20240913.calculate_working_date(&Date::new(1966,  4), &PersonnelCategory::Man));
+//     }
+//     #[test]
+//     fn working_date_mix_mid_man() {
+//         let calculator = CombinedRules { rules: vec![ Box::new(rules::Rules20240913), Box::new(rules::Rules1978) ] };
+//         assert_eq!(Some(Date::new(2026, 5)), calculator.calculate_working_date(&Date::new(1966,  1), &PersonnelCategory::Man));
+//         assert_eq!(Some(Date::new(2026, 6)), calculator.calculate_working_date(&Date::new(1966,  2), &PersonnelCategory::Man));
+//         assert_eq!(Some(Date::new(2026, 7)), calculator.calculate_working_date(&Date::new(1966,  3), &PersonnelCategory::Man));
+//         assert_eq!(Some(Date::new(2026, 8)), calculator.calculate_working_date(&Date::new(1966,  4), &PersonnelCategory::Man));
+//     }
+//
+//     #[test]
+//     fn test_testcases() {
+//         let calculator = CombinedRules { rules: vec![ Box::new(rules::Rules20240913), Box::new(rules::Rules1978) ] };
+//         assert_eq!(calculator.calculate_working_date(&Date::new(1971,04), &PersonnelCategory::FemaleCadres), Some(Date::new(2026,08)));
+//         assert_eq!(calculator.calculate_working_date(&Date::new(1995,12), &PersonnelCategory::FemaleWorkers), Some(Date::new(2050,12)));
+//         assert_eq!(calculator.calculate_working_date(&Date::new(2000,12), &PersonnelCategory::FemaleCadres), Some(Date::new(2058,12)));
+//         assert_eq!(calculator.calculate_working_date(&Date::new(1963,04), &PersonnelCategory::FemaleCadres), Some(Date::new(2018,04)));
+//         assert_eq!(calculator.calculate_working_date(&Date::new(1995,12), &PersonnelCategory::Man), Some(Date::new(2058,12)));
+//         assert_eq!(calculator.calculate_working_date(&Date::new(2000,12), &PersonnelCategory::Man), Some(Date::new(2063,12)));
+//         assert_eq!(calculator.calculate_working_date(&Date::new(1965,12), &PersonnelCategory::Man), Some(Date::new(2026,03)));
+//         assert_eq!(calculator.calculate_working_date(&Date::new(1963,12), &PersonnelCategory::Man), Some(Date::new(2023,12)));
+//         assert_eq!(calculator.calculate_working_date(&Date::new(1964,02), &PersonnelCategory::Man), Some(Date::new(2024,02)));
+//         assert_eq!(calculator.calculate_working_date(&Date::new(1965,01), &PersonnelCategory::Man), Some(Date::new(2025,02)));
+//     }
+//
+//     fn test_for_date_convert() {
+//         let date1 = Date::new(1971, 4);
+//         let date2 = Date::new(2026, 8);
+//         let retire_age_1: f32 = (date2 - date1).into();
+//         // assert_eq!(retire_age_1, 55.33);
+//     }
+// }

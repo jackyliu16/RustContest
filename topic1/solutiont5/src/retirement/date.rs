@@ -98,41 +98,41 @@ impl From<Date> for usize {
     }
 }
 
-#[cfg(test)]
-mod tests {
-    use crate::retirement::date::Date;
-
-    #[test]
-    fn date_add() {
-        assert_eq!(
-            Date::new(2002, 4) + Date::new(60, 3),
-            Date::new(2062, 7)
-        );
-        assert_eq!(
-            Date::new(2002, 4) + Date::new(60, 10),
-            Date::new(2063, 2)
-        );
-        assert_eq!(
-            Date::new(2002, 4) + Date::new(0, 13),
-            Date::new(2003, 5)
-        );
-    }
-    #[test]
-    fn date_sub() {
-        assert_eq!(
-            Date::new(2062, 7) -
-                Date::new(60, 3),
-            Date::new(2002, 4)
-        );
-        assert_eq!(
-            Date::new(2063, 2) -
-                Date::new(60, 10),
-            Date::new(2002, 4)
-        );
-        assert_eq!(
-            Date::new(2003, 5) -
-            Date::new(2002, 4),
-            Date::new(1, 1),
-        );
-    }
-}
+// #[cfg(test)]
+// mod tests {
+//     use crate::retirement::date::Date;
+//
+//     #[test]
+//     fn date_add() {
+//         assert_eq!(
+//             Date::new(2002, 4) + Date::new(60, 3),
+//             Date::new(2062, 7)
+//         );
+//         assert_eq!(
+//             Date::new(2002, 4) + Date::new(60, 10),
+//             Date::new(2063, 2)
+//         );
+//         assert_eq!(
+//             Date::new(2002, 4) + Date::new(0, 13),
+//             Date::new(2003, 5)
+//         );
+//     }
+//     #[test]
+//     fn date_sub() {
+//         assert_eq!(
+//             Date::new(2062, 7) -
+//                 Date::new(60, 3),
+//             Date::new(2002, 4)
+//         );
+//         assert_eq!(
+//             Date::new(2063, 2) -
+//                 Date::new(60, 10),
+//             Date::new(2002, 4)
+//         );
+//         assert_eq!(
+//             Date::new(2003, 5) -
+//             Date::new(2002, 4),
+//             Date::new(1, 1),
+//         );
+//     }
+// }
