@@ -4,6 +4,8 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
+aint = { version = "0.1", features = [ "serde", "num" ] }
+base64 = "0.22.1"
 
 [[test]]
 name = "tests"
