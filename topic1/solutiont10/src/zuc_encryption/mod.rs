@@ -10,7 +10,6 @@ use base64::Engine;
 use crate::zuc_encryption::consts::{D, S0, S1};
 
 mod consts;
-mod structs;
 
 const MOD231SUB1: u32 = 0x7FFF_FFFF;
 
@@ -83,9 +82,6 @@ impl Regs {
                 | u31::from(D[idx]).overflowing_shl(8).0
                 | u31::from(iv[idx]);
         }
-        // for idx in 0..s.len() {
-        //     println!("idx {idx}:  \t{:031b}", s[idx]);
-        // }
         let mut regs = Regs { // CHECK CONSISTENCY
             lfsr: s,
             r1: 0,
@@ -110,6 +106,7 @@ impl Regs {
 
         regs
     }
+    
     fn generate(&mut self) -> u32 {
         self.bit_reconstruction();
         let f = self.f();
@@ -118,9 +115,7 @@ impl Regs {
         // dbg!(f, self.x[3], w);
         w
     }
-}
-
-impl Regs { // ======== LSFR（线性反馈移位器） ========
+    
     // v = 2^15*S_15 + 2^17*S_13 + 2^21*S_10 + 2^20*S_4 + ((1+2^8)*S_0) mod (2^31 - 1)
     // S_16 = (u + v) mod (2^31 - 1)
     // if S_16 == 0 -> S_16 = 2^31 - 1
@@ -146,6 +141,7 @@ impl Regs { // ======== LSFR（线性反馈移位器） ========
         self.lfsr[15] = s16;
         // dbg!(self.lfsr);
     }
+    
     // S_16 = 2^15*S_15 + 2^17*S_13 + 2^21*S_10 + 2^20*S_4 + ((1+2^8)*S_0) mod (2^31-1)
     // if S_16 == 0 -> S_16 = 2^31 - 1
     // s[0..15] = s[1..16]
@@ -158,7 +154,7 @@ impl Regs { // ======== LSFR（线性反馈移位器） ========
         s16 = mod_add(s16, mod_mul(u31::new(1 << 15).unwrap(), self.lfsr[15]));
 
         if s16 == u31!(0) {
-           s16 = u31!(0x7FFF_FFFF); 
+            s16 = u31!(0x7FFF_FFFF);
         }
         // dbg!(s16);
         for i in 0..15 {
@@ -166,16 +162,14 @@ impl Regs { // ======== LSFR（线性反馈移位器） ========
         }
         self.lfsr[15] = s16; // CHECK CONSISTENCY
     }
-}
-
-impl Regs { // ======== BR（比特重组） ========
+    
     fn bit_reconstruction(&mut self) {
         self.x[0] = u32::from(self.lfsr[14])
             .bitand(0x0000_FFFF)                // 去除高位
             .bitxor(                                // || 合并操作
-                u32::from(self.lfsr[15])
-                    .overflowing_shl(1).0   // 左侧需要在原先 15 位的基础上添加一位
-                    .bitand(0xFFFF_0000)         // 去除低位
+                                                    u32::from(self.lfsr[15])
+                                                        .overflowing_shl(1).0   // 左侧需要在原先 15 位的基础上添加一位
+                                                        .bitand(0xFFFF_0000)         // 去除低位
             );
         // println!("{:032b}", self.x[0]);
         self.x[1] = u32::from(self.lfsr[11])
@@ -201,16 +195,9 @@ impl Regs { // ======== BR（比特重组） ========
                     .overflowing_shr(15).0      // 去除低位
             );
     }
-}
 
-
-// CHECK CONSISTENCY
-impl Regs { // ======== F 非线性函数 ========
     fn f(&mut self) -> u32 {
         // w = (x_0 (+) R_1) mod 2^31
-        // let w1 = mod_add(u31::try_from(self.r1).unwrap(), u31::try_from(self.x[1]).unwrap());
-        // dbg!(self.x[0], self.r1, self.r2);
-        // let w = u32::from(self.x[0]).bitxor(self.r1) % MOD231SUB1;
         let w = u32::from(self.x[0]).bitxor(self.r1).wrapping_add(self.r2);
         let w1: u32 = self.r1.wrapping_add(self.x[1]);
         let w2: u32 = self.r2.bitxor(self.x[2]);
@@ -228,30 +215,30 @@ impl Regs { // ======== F 非线性函数 ========
         let (x2, x3): (u8, u8) = xb.bit_split();
 
         self.r1 = // 经过 S0..4 盒的映射之后得到最终结果并合并到一起
-            (S0[x0 as usize] as u32) << 24 | 
-            (S1[x1 as usize] as u32) << 16 |
-            (S0[x2 as usize] as u32) << 8 |
-            (S1[x3 as usize] as u32);
+            (S0[x0 as usize] as u32) << 24 |
+                (S1[x1 as usize] as u32) << 16 |
+                (S0[x2 as usize] as u32) << 8 |
+                (S1[x3 as usize] as u32);
         // dbg!(self.r1);
-        
+
         let (xa, xb): (u16, u16) = combine2.bit_split();
         let (x0, x1): (u8, u8) = xa.bit_split();
         let (x2, x3): (u8, u8) = xb.bit_split();
-        
-        self.r2 = 
+
+        self.r2 =
             (S0[x0 as usize] as u32) << 24 |
-            (S1[x1 as usize] as u32) << 16 | 
-            (S0[x2 as usize] as u32) << 8  |
-            (S1[x3 as usize] as u32);
+                (S1[x1 as usize] as u32) << 16 |
+                (S0[x2 as usize] as u32) << 8  |
+                (S1[x3 as usize] as u32);
         // dbg!(self.r2);
 
         w
     }
+
 }
 
 /// return (a + b) mod (2^31 - 1)
 fn mod_add(a: u31, b: u31) -> u31 {
-    // a.wrapping_add(b).bitand(u31!(0x7FFF_FFFF)).wrapping_add(a.wrapping_add(b).shr(31))
     u31::new(((u64::from(a) + u64::from(b)) % 2147483647u64) as u32).unwrap()
 }
 
