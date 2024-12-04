@@ -1,16 +1,13 @@
 use aint::u31;
 
 mod zuc_encryption;
-mod copy;
 
 fn main() {
     let inp = String::from("特朗普");
-    let result = zuc_encryption::encryption(inp);
-    println!("{result}");
-
-    // let inp = "特朗普";
-    // let encryption = copy::encryption((*inp).to_string());
-    // println!("{}", encryption);
+    
+    let result = zuc_encryption::encryption(inp.to_string());
+    dbg!(result);
+//     
 }
 // dbg!(u31!(0x0000_FFFF)); // 65535
 // dbg!(u31!(0x7FFF_0000)); // 2147418112
