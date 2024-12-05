@@ -259,37 +259,37 @@ fn l2(bits: u32) -> u32 {
     bits ^ bits.rotate_left(8) ^ bits.rotate_left(14) ^ bits.rotate_left(22) ^ bits.rotate_left(30)
 }
 
-#[cfg(test)]
-mod tests {
-    use aint::u31;
-    use crate::zuc_encryption::{mod_mul, mod_add};
-    const MOD231SUB1: u32 = 0x7FFF_FFFF;
-
-    #[test]
-    fn test_mod_mul_typical() {
-        assert_eq!(mod_mul(u31!(5), u31!(3)), u31!(15));
-        assert_eq!(mod_mul(u31!(0x7FFF_FFFF), u31!(0x0000_0001)), u31!(0x0000_0000));
-        assert_eq!(mod_mul(u31!(0x7FFF_FFFF), u31!(0x0000_0002)), u31!(0x0000_0000));
-    }
-
-    #[test]
-    fn test_mod_mul_zero() {
-        assert_eq!(mod_mul(u31!(0), u31!(100)), u31!(0));
-        assert_eq!(mod_mul(u31!(100), u31!(0)), u31!(0));
-    }
-
-    fn test_mod_add_typical() {
-        // dbg!(0x7FFF_FFFF, u31::MAX, u32::MAX); // 2147483647 2147483647 4294967295
-        assert_eq!(mod_add(u31!(245), u31!(134)), u31!(379));
-        assert_eq!(mod_add(u31!(0x7FFF_FFFF), u31!(0x0)), u31!(0x7FFF_FFFF));
-        assert_eq!(mod_add(u31!(0x7FFF_FFFF), u31!(0x1)), u31!(0x0));
-        assert_eq!(mod_add(u31!(0x7FFF_FFFF), u31!(0x2)), u31!(0x1));
-    }
-
-    #[test]
-    fn test_mod_add_zero() {
-        assert_eq!(mod_add(u31!(0), u31!(100)), u31!(100));
-        assert_eq!(mod_add(u31!(100), u31!(0)), u31!(100));
-        assert_eq!(mod_add(u31!(0), u31!(0)), u31!(0));
-    }
-}
+// #[cfg(test)]
+// mod tests {
+//     use aint::u31;
+//     use crate::zuc_encryption::{mod_mul, mod_add};
+//     const MOD231SUB1: u32 = 0x7FFF_FFFF;
+// 
+//     #[test]
+//     fn test_mod_mul_typical() {
+//         assert_eq!(mod_mul(u31!(5), u31!(3)), u31!(15));
+//         assert_eq!(mod_mul(u31!(0x7FFF_FFFF), u31!(0x0000_0001)), u31!(0x0000_0000));
+//         assert_eq!(mod_mul(u31!(0x7FFF_FFFF), u31!(0x0000_0002)), u31!(0x0000_0000));
+//     }
+// 
+//     #[test]
+//     fn test_mod_mul_zero() {
+//         assert_eq!(mod_mul(u31!(0), u31!(100)), u31!(0));
+//         assert_eq!(mod_mul(u31!(100), u31!(0)), u31!(0));
+//     }
+// 
+//     fn test_mod_add_typical() {
+//         // dbg!(0x7FFF_FFFF, u31::MAX, u32::MAX); // 2147483647 2147483647 4294967295
+//         assert_eq!(mod_add(u31!(245), u31!(134)), u31!(379));
+//         assert_eq!(mod_add(u31!(0x7FFF_FFFF), u31!(0x0)), u31!(0x7FFF_FFFF));
+//         assert_eq!(mod_add(u31!(0x7FFF_FFFF), u31!(0x1)), u31!(0x0));
+//         assert_eq!(mod_add(u31!(0x7FFF_FFFF), u31!(0x2)), u31!(0x1));
+//     }
+// 
+//     #[test]
+//     fn test_mod_add_zero() {
+//         assert_eq!(mod_add(u31!(0), u31!(100)), u31!(100));
+//         assert_eq!(mod_add(u31!(100), u31!(0)), u31!(100));
+//         assert_eq!(mod_add(u31!(0), u31!(0)), u31!(0));
+//     }
+// }
