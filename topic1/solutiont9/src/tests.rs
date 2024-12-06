@@ -33,8 +33,9 @@ mod tests {
             if duration <= Duration::new(6, 0) && result == *expected {
                 total_score += 10.0;
             }
+            dbg!(result, *expected);
         }
-        println!("Total score: {:.2}", total_score);
+        println!("Total score: {:.4}", total_score);
         assert_eq!(100.00, total_score);
     }
 }
