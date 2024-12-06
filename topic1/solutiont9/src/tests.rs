@@ -15,9 +15,9 @@ mod tests {
         (30, "49,28"),
         (20, "309,123"),
         (10, "26241,5248"),
-        // (9,  "74373,13387"),
-        // (8,  "238733,38197"),
-        // (7,  "1213001,169820"),
+        (9,  "74373,13387"),
+        (8,  "238733,38197"),
+        (7,  "1213001,169820"),
     ];
 
     // 定义一个测试函数来验证每个测试用例
@@ -32,8 +32,9 @@ mod tests {
             // 时间超6s，判定不合格
             if duration <= Duration::new(6, 0) && result == *expected {
                 total_score += 10.0;
+            } else {
+                dbg!(result, *expected);
             }
-            dbg!(result, *expected);
         }
         println!("Total score: {:.4}", total_score);
         assert_eq!(100.00, total_score);
