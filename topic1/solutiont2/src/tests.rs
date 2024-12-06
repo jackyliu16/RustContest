@@ -1,6 +1,4 @@
-// src/tests.rs
 mod district;
-
 #[cfg(test)]
 mod tests {
     use super::district::count_provinces;

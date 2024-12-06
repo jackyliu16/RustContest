@@ -32,8 +32,6 @@ mod tests {
             // 时间超0.5s，判定不合格
             if duration <= Duration::from_millis(500) && result == *expected {
                 total_score += 10.0;
-            } else {
-                dbg!(result, *expected);
             }
         }
         println!("Total score: {:.2}", total_score);

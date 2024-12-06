@@ -3,8 +3,8 @@ mod identity_card;
 
 #[cfg(test)]
 mod tests {
-    use std::time::{Duration, Instant};
-    use crate::identity_card::check_id_card;
+    use super::identity_card::check_id_card;
+    use std::time::{Instant, Duration};
 
     // 定义测试用例和预期结果
     // 申明：随机生成的测试身份证号，仅限测试使用，任何人不得盗用，违者按法律严惩！
