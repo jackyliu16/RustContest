@@ -11,9 +11,9 @@ pub fn min_edge_prime_num(threshold: u32) -> String {
         return String::from("3,1");
     }
 
-    let mut cnt = 10;
+    let mut cnt: u64 = 10;
     let mut primes_cnt = 3;
-    let mut edge_len= 5; // 1 + 2 turn_indicator
+    let mut edge_len: u64= 5; // 1 + 2 turn_indicator
     let mut turn = 2;
     let mut edge_num = 4;
 
@@ -21,66 +21,63 @@ pub fn min_edge_prime_num(threshold: u32) -> String {
     // println!("{} > {}", primes_cnt as f64 / (how_many_edge(cnt, turn) as f64), threshold as f64 / 100_f64);
     // 如果尚未满足要求
     println!("{:.4} > {}", primes_cnt as f64 / (how_many_edge(cnt, turn) as f64 + 1_f64), threshold as f64 / 100_f64);
-    while primes_cnt as f64 / (how_many_edge(cnt, turn) as f64 + 1f64) >= threshold as f64 / 100_f64 { // 中间的零也要计入
+
+    loop {
         cnt += 1;
+        if cnt == edge_len * edge_len {
+            // 终止条件
+            if primes_cnt as f64 / (how_many_edge(cnt, turn) as f64 + 1_f64) < threshold as f64 / 100_f64 {
+               return format!("{edge_len},{primes_cnt}");
+            }
+            // println!("cnt{cnt}, turn{turn}, edge{edge_len}, prime{primes_cnt}, {}", how_many_edge(cnt, turn));
+            turn += 1;
+            edge_len += 2;
+        }
 
         if how_many_edge(cnt, turn) != edge_num {
             edge_num = how_many_edge(cnt, turn);
-            if is_prime(cnt) {
-                primes_cnt += 1;
-                println!("\t\t>>> IS PRIME : {cnt} : {primes_cnt}");
-            } else {
-                println!("\t\t>>> NOT PRIME : {cnt} : {primes_cnt}");
+            if const_primes::is_prime(cnt) {
+               primes_cnt += 1;
             }
-
-            if cnt == edge_len * edge_len { // 如果到达下一圈的起始点
-                turn += 1;
-                edge_len += 2;
-            }
-            println!("cnt{cnt}, turn{turn}, edge{edge_len}, prime{primes_cnt}, {}", how_many_edge(cnt, turn));
-            println!("{:.4} > {}", primes_cnt as f64 / (how_many_edge(cnt, turn) as f64 + 1_f64), threshold as f64 / 100_f64);
         }
-    }
-    if cnt == (edge_len - 2) * (edge_len - 2) {
-        edge_len -= 2;
     }
 
     format!("{edge_len},{primes_cnt}")
 }
 
-const PRIMES_CACHE: Primes<10000> = Primes::new();
-/// 求素数
-/// 当值小于 10000 时直接查表获取 cnt 是否是素数
-/// 否则采用遍历法求解
-fn is_prime(num: u32) -> bool {
-    match PRIMES_CACHE.is_prime(num) {
-        Some(true) => true,
-        Some(false) => false,
-        None => {
-            if num <= 1 {
-                return false;
-            }
-            for i in 2..=((num as f32).sqrt() as u32) {
-                if num % i == 0 {
-                    return false;
-                }
-            }
-            true
-        }
-    }
-}
+// const PRIMES_CACHE: Primes<100000> = Primes::new();
+// /// 求素数
+// /// 当值小于 10000 时直接查表获取 cnt 是否是素数
+// /// 否则采用遍历法求解
+// fn is_prime(num: u64) -> bool {
+//     match PRIMES_CACHE.is_prime(num as u32) {
+//         Some(true) => true,
+//         Some(false) => false,
+//         None => {
+//             if num <= 1 {
+//                 return false;
+//             }
+//             for i in 2..=((num as f64).sqrt() as u64) {
+//                 if num % i == 0 {
+//                     return false;
+//                 }
+//             }
+//             true
+//         }
+//     }
+// }
 
 #[inline(always)]
 /// 计算直到当前 cnt 位置一共存在多少个对角点
-fn how_many_edge(cnt: u32, turn: u32) -> u32 {
+fn how_many_edge(cnt: u64, turn: u32) -> u32 {
     if cnt <= 9 || turn <= 1{ panic!("Not support cnt <= 9"); }
     let last_turn = turn - 1;
     let remain_edge = last_turn * 4;
     let this_len = 1 + 2 * turn;
     let remain_len = 1 + 2 * last_turn;
-    let len_this = cnt - remain_len * remain_len;
-    let this_edge = len_this / (this_len - 1);
-    remain_edge + this_edge
+    let len_this = cnt - remain_len as u64 * remain_len as u64;
+    let this_edge = len_this / (this_len - 1) as u64;
+    remain_edge + this_edge as u32
 }
 
 // mod tests {
