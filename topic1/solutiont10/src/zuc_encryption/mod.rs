@@ -1,25 +1,44 @@
+//! 基于祖冲之算法的简单加密实现
+//!
+//! # 国家标准全文:
+//! [GB/T 33133.1-2016 信息安全技术 祖冲之序列密码算法 第1部分：算法描述](https://openstd.samr.gov.cn/bzgk/gb/newGbInfo?hcno=8C41A3AEECCA52B5C0011C8010CF0715)
+//! [GB/T 33133.2-2021 信息安全技术 祖冲之序列密码算法 第2部分：保密性算法](https://openstd.samr.gov.cn/bzgk/gb/newGbInfo?hcno=5D3CBA3ADEC7989344BD1E63006EF2B3)
+//! [GB/T 33133.3-2021 信息安全技术 祖冲之序列密码算法 第3部分：完整性算法](https://openstd.samr.gov.cn/bzgk/gb/newGbInfo?hcno=C6D60AE0A7578E970EF2280ABD49F4F0)
+//!
+//! # 功能:
+//! - 对于输入字符进行 PKCS#7 填充
+//! - 使用祖冲之算法对于填充之后的块进行加密
+//! - 将加密之后的数据编码为 base64 以方便阅读与传输
+//!
+//! # 输入:
+//!     input: 需要加密的字符串
+//!     有关于 密钥生成的 k, iv 默认采用 [0u8;16] 和 [1u8; 16]
+//!
+//! # 示例:
+//! ```rust
+//!     let inp = String::from("特朗普");
+//!     let result = zuc_encryption::encryption(inp.to_string());
+//! ```
 use std::cmp::PartialEq;
 use std::fmt;
 use std::fmt::Formatter;
 use std::ops::{Add, AddAssign, BitAnd, BitXor, Mul, Shl, Shr};
-// use crate::zuc_encryption::structs::{MyU31, MyU32};
 
-use byteorder::{BigEndian, WriteBytesExt};
-use aint::{u15, u31, u32, Aint, BitSplit};
+use byteorder::WriteBytesExt;
+use aint::{u31, u32, BitSplit};
 use base64::Engine;
 use crate::zuc_encryption::consts::{D, S0, S1};
 
+/// zuc 算法实现所必要的矩阵,如
 mod consts;
-
-const MOD231SUB1: u32 = 0x7FFF_FFFF;
 
 pub fn encryption(input: String) -> String {
     // Base on requirement
-    let k = [0u8; 16];
-    let iv = [1u8; 16];
+    let k = [0_u8; 16];
+    let iv = [1_u8; 16];
 
-    let mut regs = Regs::new(k, iv);
-    dbg!(&regs); // CHECK CONSISTENCY
+    // 根据 zuc 算法要求进行初始化
+    let mut regs = Regs::new(k, iv); // CHECK CONSISTENCY
     let mut input_bytes = input.into_bytes();
 
     // PKCS#7 padding
@@ -27,31 +46,35 @@ pub fn encryption(input: String) -> String {
     let padding_length = 4 - input_bytes.len() % 4;
     input_bytes.append(&mut vec![padding_length as u8; padding_length]); // CHECK CONSISTENCY
 
+    // 根据 祖冲之算法 要求,生成一系列的密钥字
     let mut encrypted_key = vec![];
-    for i in 0..input_bytes.len() / 4 {
-        let tmp =  regs.generate().to_be();
-        encrypted_key.push(tmp);
+    for _ in 0..input_bytes.len() / 4 {
+        encrypted_key.push(regs.generate().to_be());
     }
-    println!("{:?}", &encrypted_key); // CHECK CONSISTENCY
+    // println!("{:?}", &encrypted_key); // CHECK CONSISTENCY
 
+    // 参考保密性算法实现
     let mut obs: Vec<u8> = vec![];
-    dbg!(encrypted_key.len());
     for (i, &byte) in input_bytes.iter().enumerate() {
         // NOTE: 每一个中文会被拆分成为四个 bytes
         let key = encrypted_key[i / 4];
         // 對於每一個字節而言，與其對應的加密密鑰進行異或
         let text = byte.bitxor((key >> (8 * (i % 4)) & 0xFF) as u8);
         obs.push(text);
-        // obs.write_u8(text).unwrap();
     }
 
     base64::encode(&obs)
 }
 
+/// 用于存储在算法运行过程中需要临时存储的因子
 struct Regs {
+    /// 线性反馈移位寄存器
     lfsr:   [u31; 17],
+    /// 算法所需求的 32 位比特记忆单元 R1
     r1:      u32,
+    /// 算法所需求的 32 位比特记忆单元 R2
     r2:      u32,
+    /// 比特重组输出的 X
     x:      [u32; 4],
 }
 
@@ -74,9 +97,14 @@ impl fmt::Debug for Regs {
 }
 
 impl Regs {
+    /// 参照 GB/T 33133.1-2016 传入数据对于保存算法内部信息的结构体进行初始化
+    ///
+    /// # 输入值:
+    ///     k: 初始密钥
+    ///     iv: 初始向量
     fn new(k: [u8; 16], iv: [u8; 16]) -> Regs {
         let mut s = [u31!(0); 17];
-        for idx in 0..=15 { // CHECK: CONSISTENT WITH MANUAL CAL
+        for idx in 0..=15 { // CHECK CONSISTENCY
             s[idx] =
                   u31::from(k[idx]).overflowing_shl(23).0
                 | u31::from(D[idx]).overflowing_shl(8).0
@@ -89,63 +117,71 @@ impl Regs {
             x: [0; 4]
         };
         // dbg!(&regs);
-        // println!("============== 32 LOOP ==============");
+        // println!("============== 32 LOOP STR ==============");
 
         for _ in 0..32 {
             // println!(" - LOOP ------------------------------------ ");
             regs.bit_reconstruction(); // CHECK CONSISTENCY
-            // dbg!(&regs);
             let w = regs.f();     // CHECK CONSISTENCY
-            dbg!(w);
+            // dbg!(w);
             regs.lsfr_init(u31::new(w.shr(1)).unwrap());
             // dbg!(&regs);
         }
         regs.generate();
 
-        // println!("============== 32 LOOP ==============");
+        // println!("============== 32 LOOP END ==============");
 
         regs
     }
-    
+
+    /// 生成 zuc 算法密钥
+    ///
+    /// 参照 GB/T 33133.1-2016 进行实现
     fn generate(&mut self) -> u32 {
         self.bit_reconstruction();
         let f = self.f();
         let w = f.bitxor(self.x[3]);
         self.lsfr_update();
-        // dbg!(f, self.x[3], w);
         w
     }
-    
-    // v = 2^15*S_15 + 2^17*S_13 + 2^21*S_10 + 2^20*S_4 + ((1+2^8)*S_0) mod (2^31 - 1)
-    // S_16 = (u + v) mod (2^31 - 1)
-    // if S_16 == 0 -> S_16 = 2^31 - 1
-    // s[0..15] = s[1..16]
+
+    /// 线性移位寄存器初始化模式
+    ///
+    /// 参照 GB/T 33133.1-2016 进行实现
     fn lsfr_init(&mut self, u: u31) {
+        // v = 2^15*S_15 + 2^17*S_13 + 2^21*S_10 + 2^20*S_4 + ((1+2^8)*S_0) mod (2^31 - 1)
+        // S_16 = (u + v) mod (2^31 - 1)
+        // if S_16 == 0 -> S_16 = 2^31 - 1
+        // s[0..15] = s[1..16]
         let mut v: u31 = self.lfsr[0];
         v = mod_add(v, mod_mul(u31::new(1 << 8).unwrap(), self.lfsr[0]));
-
         v = mod_add(v, mod_mul(u31::new(1 << 20).unwrap(), self.lfsr[4]));
         v = mod_add(v, mod_mul(u31::new(1 << 21).unwrap(), self.lfsr[10]));
         v = mod_add(v, mod_mul(u31::new(1 << 17).unwrap(), self.lfsr[13]));
         v = mod_add(v, mod_mul(u31::new(1 << 15).unwrap(), self.lfsr[15]));
-
         // dbg!(u, v);
+
         let mut s16: u31 = mod_add(u31::from(v), u);
         if s16 == u31::new(0).unwrap() {
-            s16 = u31::new(MOD231SUB1).unwrap();
+            s16 = u31!(0x7FFF_FFFF);
         }
         // dbg!(s16);
+
         for i in 0..15 {
             self.lfsr[i] = self.lfsr[i + 1];
         }
         self.lfsr[15] = s16;
         // dbg!(self.lfsr);
     }
-    
-    // S_16 = 2^15*S_15 + 2^17*S_13 + 2^21*S_10 + 2^20*S_4 + ((1+2^8)*S_0) mod (2^31-1)
-    // if S_16 == 0 -> S_16 = 2^31 - 1
-    // s[0..15] = s[1..16]
+
+    /// 线性移位寄存器工作模式
+    ///
+    /// 参照 GB/T 33133.1-2016 进行实现
     fn lsfr_update(&mut self) {
+        // S_16 = 2^15*S_15 + 2^17*S_13 + 2^21*S_10 + 2^20*S_4 + ((1+2^8)*S_0) mod (2^31-1)
+        // if S_16 == 0 -> S_16 = 2^31 - 1
+        // s[0..15] = s[1..16]
+
         let mut s16 = self.lfsr[0];
         s16 = mod_add(s16, mod_mul(u31::new(1 << 8 ).unwrap(), self.lfsr[0]));
         s16 = mod_add(s16, mod_mul(u31::new(1 << 20).unwrap(), self.lfsr[4]));
@@ -162,14 +198,17 @@ impl Regs {
         }
         self.lfsr[15] = s16; // CHECK CONSISTENCY
     }
-    
+
+    /// 比特重组算法
+    ///
+    /// 参照 GB/T 33133.1-2016 进行实现
     fn bit_reconstruction(&mut self) {
         self.x[0] = u32::from(self.lfsr[14])
             .bitand(0x0000_FFFF)                // 去除高位
             .bitxor(                                // || 合并操作
-                                                    u32::from(self.lfsr[15])
-                                                        .overflowing_shl(1).0   // 左侧需要在原先 15 位的基础上添加一位
-                                                        .bitand(0xFFFF_0000)         // 去除低位
+                u32::from(self.lfsr[15])
+                    .overflowing_shl(1).0   // 左侧需要在原先 15 位的基础上添加一位
+                    .bitand(0xFFFF_0000)         // 去除低位
             );
         // println!("{:032b}", self.x[0]);
         self.x[1] = u32::from(self.lfsr[11])
@@ -196,12 +235,14 @@ impl Regs {
             );
     }
 
+    /// 非线性函数 f
+    ///
+    /// 参照 GB/T 33133.1-2016 进行实现
     fn f(&mut self) -> u32 {
         // w = (x_0 (+) R_1) mod 2^31
         let w = u32::from(self.x[0]).bitxor(self.r1).wrapping_add(self.r2);
         let w1: u32 = self.r1.wrapping_add(self.x[1]);
         let w2: u32 = self.r2.bitxor(self.x[2]);
-
         // dbg!(w, w1, w2);
 
         // R_1 = S[L_1(W_1L || W_2H)]
@@ -251,10 +292,17 @@ pub fn mod_mul(a: u31, b: u31) -> u31 {
     u31::new(((u64::from(a) * u64::from(b)) % 0x7FFF_FFFF) as u32).unwrap()
 }
 
+/// L1 32 比特线性转换实现
+///
+/// 参照 GB/T 33133.1-2016 进行实现
 fn l1(bits: u32) -> u32 {
     bits ^ bits.rotate_left(2) ^ bits.rotate_left(10) ^ bits.rotate_left(18) ^ bits.rotate_left(24)
 }
 
+
+/// L2 32 比特线性转换实现
+///
+/// 参照 GB/T 33133.1-2016 进行实现
 fn l2(bits: u32) -> u32 {
     bits ^ bits.rotate_left(8) ^ bits.rotate_left(14) ^ bits.rotate_left(22) ^ bits.rotate_left(30)
 }
