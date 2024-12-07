@@ -1,12 +1,14 @@
-use const_primes::{primes, Primes};
-
-const PRIMES_CACHE: Primes<10000> = Primes::new();
+/// 获取前两个不满足 Goldbach 猜想的数之和
+///
+/// 如果该和存在, 则返回数之和, 否则返回 0
 pub fn goldbach_conjecture() -> u64 {
     let mut res = 0;
+    // 由 迭代器 中获取奇合数
+    // 这样可以根据需要往后自动拓展
     for odd in generate_odd_composite_number() {
-        if PRIMES_CACHE.iter().take_while(|&&x| x < odd as u32)
+        if PRIMES_CACHE.iter().take_while(|&&x| x < odd as u32)    // 所有可能的素数
             .map(|s| *s as u32 as u64)
-            .all(|p| !((odd - p) % 2 == 0 && is_same_after_sqrt((odd - p) / 2))) {
+            .all(|p| !((odd - p) % 2 == 0 && is_same_after_sqrt((odd - p) / 2))) {         // (odd - p) / 2 是完全平方数的情况下返回
 
             // 遍历全部但是还没找到 -> 确实不满足
             if res == 0 { // 第一个
@@ -21,7 +23,7 @@ pub fn goldbach_conjecture() -> u64 {
     0
 }
 
-/// 求素数
+/// 判断 num 是否是素数
 #[inline(always)]
 fn is_prime(num: u64) -> bool {
     if num <= 1 {
@@ -36,14 +38,13 @@ fn is_prime(num: u64) -> bool {
 }
 
 
-/// 生成奇合数
-/// 奇合数：奇数且不是素数
+/// 生成并返回 奇合数 的迭代器
 pub fn generate_odd_composite_number() -> impl Iterator<Item = u64> {
     let mut cur: u64 = 9;                        // 最小的奇合数
     std::iter::from_fn(move || loop {
-        if cur % 2 == 1 && !is_prime(cur) {     // 奇数 且 不是素数(不可能是因数)
+        if cur % 2 == 1 && !is_prime(cur) {      // 奇数 且 不是素数
             let res = Some(cur);
-            cur += 2;                           // 检查下一个奇数
+            cur += 2;                            // 检查下一个奇数
             return res;
         }
         cur += 2
@@ -59,6 +60,10 @@ pub fn is_same_after_sqrt(num: u64) -> bool {
     let tmp = (num as f64).sqrt() as u64;
     tmp.pow(2) == num
 }
+
+/*
+    下面的文件是历史实现版本所引用的, 与当前实现无关
+ */
 
 /// 计算一个数能否由一个素数与其平方的两倍计算而成
 /// n: 奇合数
