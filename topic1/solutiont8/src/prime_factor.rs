@@ -57,6 +57,22 @@ fn qpow(mut x: u128, mut p: u128, m: u128) -> u128 {
     ans
 }
 
+/// 递归的分解一个数, 找出其最大因子并更新到 max_factor 中
+///
+/// # 输入值:
+///     x: 需要分解的参数
+///     max_factor: 指向 u128 的可变引用, 用于存储当前找到的最大因子
+///
+/// # 示例
+/// ```
+/// let mut max_factor = 0u128;
+/// fac(100, &mut max_factor);
+/// println!("最大因子是: {}", max_factor);
+/// ```
+/// 
+/// # 警告⚠️:
+///     该算法的依赖项依赖 随机数生成算法, 有极小概率会出现错误
+///
 fn fac(x: u128, max_factor: &mut u128) {
     if x <= *max_factor || x < 2 {
         return;
@@ -84,7 +100,7 @@ fn fac(x: u128, max_factor: &mut u128) {
 /// # 复杂度:
 ///     平均情况下的算法复杂度为 O(k * log^3(n)), k 是迭代次数, n 是 p 的位数
 ///
-/// # 警告:
+/// # 警告⚠️:
 ///     算法的成功依赖于随机数生成器, 存在一定的假阳性误报率(极低可能发生)
 fn miller_rabin(p: u128) -> bool {
     if p < 2 || p % 2 == 0 {
@@ -128,7 +144,7 @@ fn miller_rabin(p: u128) -> bool {
 /// # 复杂性:
 ///     平均时间情况下为 O(sqrt(n))
 ///
-/// # Warn:
+/// # 警告⚠️:
 ///     算法的成功依赖于随机数生成器, 并不能保证一定能找到非平凡因子.
 fn pollard_rho(x: u128) -> u128 {
     let mut s = 0;
