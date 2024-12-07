@@ -3,12 +3,15 @@ use rand::{thread_rng, Rng};
 use std::cmp::max;
 use std::panic::resume_unwind;
 
+/// 求一个数的最大素数因子
+/// 返回素数因子本身
 pub fn find_max_prime_factor(number: u128) -> u128 {
     let mut max_factor = 0_u128;
     fac(number, &mut max_factor);
-    return max_factor;
+    max_factor
 }
 
+/// 计算两个数的 最大公约数
 fn gcd(a: u128, b: u128) -> u128 {
     if b == 0 {
         a
@@ -17,14 +20,15 @@ fn gcd(a: u128, b: u128) -> u128 {
     }
 }
 
-/// 快速乘
+/// 快速乘法 (二进制乘法)
+/// 在进行手动二进制乘法的过程中逐步取模以保证不会超过边界
+/// @Params: a, b: 乘数 ; m: 模数
 fn bmul(a: u128, b: u128, m: u128) -> u128 {
-    // (a % m * b % m) % m
+    // (a * b) % m = (a % m * b % m) % m
     let mut a = a % m;
     let mut b = b % m;
 
     let mut res = 0_u128;
-    let mut a = a;
 
     while b > 0 {
         // 对于 b 的每一位
@@ -39,6 +43,7 @@ fn bmul(a: u128, b: u128, m: u128) -> u128 {
 }
 
 /// 快速幂
+/// 在 m 模下, 计算并返回 x 的幂 p
 fn qpow(mut x: u128, mut p: u128, m: u128) -> u128 {
     let mut ans = 1;
     while p != 0 {
@@ -56,11 +61,12 @@ fn fac(x: u128, max_factor: &mut u128) {
     if x <= *max_factor || x < 2 {
         return;
     }
+    // Miller Rabin 算法 判断是否为素数，如果是, 直接返回
     if miller_rabin(x) {
-        // Miller Rabin 算法 判断是否为素数，如果是就可以直接返回了
         *max_factor = std::cmp::max(*max_factor, x);
         return;
     }
+    // 用 Pollard-Rho 算法找一个因子 [p] ，将 [x] 除去因子 [p] 。再递归分解 [x] 和 [p]
     let mut p = x;
     while p >= x {
         p = pollard_rho(x);
@@ -73,6 +79,13 @@ fn fac(x: u128, max_factor: &mut u128) {
     fac(p, max_factor);
 }
 
+/// 使用 Miller Rabin 素性测试算法判断一个数是否为素数
+///
+/// # 复杂度:
+///     平均情况下的算法复杂度为 O(k * log^3(n)), k 是迭代次数, n 是 p 的位数
+///
+/// # 警告:
+///     算法的成功依赖于随机数生成器, 存在一定的假阳性误报率(极低可能发生)
 fn miller_rabin(p: u128) -> bool {
     if p < 2 || p % 2 == 0 {
         return false;
@@ -110,6 +123,13 @@ fn miller_rabin(p: u128) -> bool {
     true
 }
 
+/// 使用 Pollard's rho 算法 寻找大合数的 非平凡因子
+///
+/// # 复杂性:
+///     平均时间情况下为 O(sqrt(n))
+///
+/// # Warn:
+///     算法的成功依赖于随机数生成器, 并不能保证一定能找到非平凡因子.
 fn pollard_rho(x: u128) -> u128 {
     let mut s = 0;
     let mut t = 0;
