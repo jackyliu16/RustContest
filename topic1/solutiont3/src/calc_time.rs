@@ -8,7 +8,7 @@ pub fn time_info(time: &str) -> String {
     let day = vec[2].parse::<usize>().unwrap();
 
     let week_num = get_curr_week_since_this_year(year, month, day);
-    let remain_day = how_many_days_between(
+    let remain_day_to_new_year = how_many_days_between(
         (year, month, day),
         (year + 1, 1, 1)
     );
@@ -31,7 +31,7 @@ pub fn time_info(time: &str) -> String {
 
     format!("{},{},{}",
             week_num,
-            remain_day,
+            remain_day_to_new_year,
             remain_of_next_lunar
     )
 }
@@ -58,16 +58,18 @@ pub fn days_until_year(mut year: isize) -> isize {
     days + leap_years
 }
 
+/// 获取本月的总天数
 pub fn how_many_days_of_this_month(year: isize, month: usize) -> usize {
-    if month == 0 { panic!("Incorrect Format") }
+    if month == 0 || month > 12 { panic!("Incorrect Format") }
     match month {
         4 | 6 | 9 | 11 => 30,
         2 if is_leap_year(year) => 29,
         2 if ! is_leap_year(year) => 28,
         _ => 31,
-}
+    }
 }
 
+/// 获取自某年一月一日至某月第一天的总天数
 pub fn days_until_months_since_years(year: isize, month: usize) -> usize {
     let mut days = 0;
     for m in 1..month {
@@ -78,16 +80,23 @@ pub fn days_until_months_since_years(year: isize, month: usize) -> usize {
 
 /// 计算两个不同 Date 中的差距
 pub fn how_many_days_between((year, month, day): (isize, usize, usize), (y, m, d): (isize, usize, usize)) -> usize {
+    if month > 12 || day > how_many_days_of_this_month(year, month) ||
+        m > 12 || d > how_many_days_of_this_month(y, m) {
+        panic!("Incorrect Data: month or day overflow");
+    }
     let date1 = days_until_year(year) + days_until_months_since_years(year, month) as isize + day as isize;
     let date2 = days_until_year(y) + days_until_months_since_years(y, m) as isize + d as isize;
     (date2 - date1 - 1).abs() as usize
 }
 
-/// 蔡勒公式(Zellers Kongruenz)
+/// 基于蔡勒公式(Zellers Kongruenz)计算(Y, M, D)是周几
 /// https://zh.wikipedia.org/wiki/%E8%94%A1%E5%8B%92%E5%85%AC%E5%BC%8F
 /// w = \left ( y + \left[\frac{y}{4}\right] + \left[\frac{c}{4}\right] - 2c + \left[\frac{26(m+1)}{10}\right] +d -1 \right ) \bmod 7
 pub fn zellers_kongruenz(mut year: isize, mut month: usize, day: usize) -> usize {
     if year <= 0 { panic!("Incorrect Data: zellers_kongruenz only support BC") }
+    if month > 12 || day > how_many_days_of_this_month(year, month) {
+        panic!("Incorrect Data: month or day overflow");
+    }
 
     if month < 3 { // 菜勒要求1-3月被诗作为前一年的13-14月
         month += 12;
@@ -100,12 +109,15 @@ pub fn zellers_kongruenz(mut year: isize, mut month: usize, day: usize) -> usize
     (week_days as usize % 7 + 7) % 7
 }
 
-/// 获取当前周数
-/// ISO 8601:
+/// 获取 (year, month, day) 对应的周数
+///
+/// 周数计算方式参照 ISO 8601:
 ///     一年的第一周是1月的第一个周四所在的周
 ///     如果1月1日是星期五、六或日，这天属于上一年的最后一周。
 pub fn get_curr_week_since_this_year(year: isize, month: usize, day: usize) -> usize {
-    dbg!("=====", year, month, day);
+    if month > 12 || day > how_many_days_of_this_month(year, month) {
+        panic!("Incorrect Data: month or day overflow");
+    }
     let jan1_weekday: isize = zellers_kongruenz(year, 1, 1) as isize;
     let total_day: isize = (days_until_months_since_years(year, month) + day) as isize;
     let next_jan1_offset: isize = zellers_kongruenz(year + 1, 1, 1) as isize;
@@ -163,6 +175,7 @@ pub mod lunar_cal {
     ];
     const START_YEAR: isize = 1901;
 
+    /// 获取公历某一年对应的农历大年初一的时间
     pub fn get_lunar_new_year_date(year: isize) -> (isize, usize, usize) {
         if year < 1901 || year > 2099 { panic!("get_lunar_new_year_date only support Year in 1901-2099")}
 
