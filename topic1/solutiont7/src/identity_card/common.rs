@@ -27,9 +27,9 @@ pub fn region_legitimacy_check<'a>(region: &'a str) -> Result<String, ParseError
         );
 
         let res: Vec<String> = vec![
-            get_value_from_map(format!("{}0000", y), &map)?,
-            get_value_from_map(format!("{}{}00", y, m), &map)?,
-            get_value_from_map(format!("{}{}{}", y, m, d), &map)?,
+            get_administrative_code_from_map(format!("{}0000", y), &map)?,
+            get_administrative_code_from_map(format!("{}{}00", y, m), &map)?,
+            get_administrative_code_from_map(format!("{}{}{}", y, m, d), &map)?,
         ];
 
         Ok(res.join("-"))
@@ -38,7 +38,7 @@ pub fn region_legitimacy_check<'a>(region: &'a str) -> Result<String, ParseError
     }
 }
 
-fn get_value_from_map(id: String, map: &HashMap<String, String>) -> Result<String, ParseError> {
+fn get_administrative_code_from_map(id: String, map: &HashMap<String, String>) -> Result<String, ParseError> {
     if let Some(v) = map.get(&id) {
         Ok(v.clone())
     } else {
@@ -54,6 +54,7 @@ pub fn is_leap_year(year: isize) -> bool {
 }
 
 
+/// 获取公历中某年的特定月份总共有多少天 
 pub fn how_many_days_of_this_month(year: isize, month: usize) -> usize {
     if month == 0 { panic!("Incorrect Format") }
     match month {

@@ -1,11 +1,11 @@
-use std::error::Error;
+//! 参照 GB 11643-1989 实现的针对 15 位公民身份证的合法性校验
+ 
 use std::fmt::Formatter;
 use std::str::FromStr;
 use chrono::Datelike;
 use crate::identity_card::common::{how_many_days_of_this_month, region_legitimacy_check};
 use crate::identity_card::error::ParseError;
 use crate::identity_card::GB11643;
-use crate::identity_card::gb11643_1999::GB11643_1999;
 
 pub struct GB11643_1989 {
     region: String,   // 6 [0..5]

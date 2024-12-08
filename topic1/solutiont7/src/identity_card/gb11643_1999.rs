@@ -1,3 +1,5 @@
+//! 参照 GB 11643-1999 实现的居民身份证合法性校验
+ 
 use std::fmt::Formatter;
 use std::str::FromStr;
 use chrono::Datelike;
