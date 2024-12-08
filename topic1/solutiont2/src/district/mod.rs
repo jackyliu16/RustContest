@@ -4,13 +4,13 @@ use std::fs;
 use std::env;
 use std::collections::{HashMap, HashSet};
 use std::fmt::Formatter;
-use std::ops::Add;
+use std::ops::{Add, Index};
 use std::path::PathBuf;
 use serde::{Deserialize, Deserializer, Serialize};
 use serde::de::{MapAccess, Visitor};
 use serde_json::{json, Result, Value, Error};
 use serde_with::serde_as;
-
+use crate::district::union_find::DSU;
 // REF:
 // https://github.com/serde-rs/json/issues/652
 // serde_with: version 2.0 changelog
@@ -20,6 +20,8 @@ use serde_with::serde_as;
     // s: Vec<(i32, String)>,
     // ```
 // https://tikv.github.io/doc/serde_with/rust/hashmap_as_tuple_list/index.html
+
+mod union_find;
 
 #[derive(Debug, Serialize, Deserialize)]
 struct Data { // TODO: 这个地方不是很了解，可能可以通过什么方法避免那么抽象的引用
@@ -77,7 +79,7 @@ pub fn count_provinces() -> String {
 
     // 获取将对应的内容解析并写入到数据结构
     let mut turns: Vec<HashMap<&str, Vec<&str>>> = vec![HashMap::new(); json_data.data.len()];  // 由于迭代器，第一个为空
-    for (idx, mut turn) in turns.iter_mut().enumerate() {
+    for (idx, turn) in turns.iter_mut().enumerate() {
         if let Some(data) = json_data.data.get((idx + 1).to_string().as_str()) {      // 由于迭代器，第一个为空
             // struct InnerData(Vec<(String, Vec<String>)>);
             for (k, v) in data.0.iter() {
@@ -95,22 +97,43 @@ pub fn count_provinces() -> String {
 
 /// 计算无向图的连通块个数
 fn count_connected_components<'a>(graph: &'a HashMap<&'a str, Vec<&'a str>>) -> usize {
-    let mut visited: HashSet<&'a str> = HashSet::new();
-    let mut count = 0;
-    for &node in graph.keys() {
-        dbg!(format!("start visiting {}", node));
-        dbg!(&graph[node]);
-        // FIXME: 面對第一次迭代不呈現關係，但是在第二次中呈現關係的情況無法解決。
-        if !visited.contains(node) && graph[node].iter().all(|item| !visited.contains(item)) {
-            count += 1;
-            dfs(node, graph, &mut visited);
+    /// 获取 str 的一个 Vec, 其中每一个的 idx 代指对应的节点
+    let node = generate_idx_str_mapping(graph);
+    let mut union_find = DSU::with_capacity(node.len());    
+    
+    for &key in graph.keys() {
+        for &val in graph.get(key).unwrap() {
+            union_find.union(get_idx(key, &node), get_idx(val, &node));
         }
     }
-    dbg!(&count);
-    count
+    union_find.count_sets()
+}
+
+/// 将原先 HashMap<&str, Vec<&str>> 的数据中出现的每一个城市唯一性的插入到 Vec<&str> 中进行存储
+/// 在对应数据被正确插入到 Vec<&str> 中之后, idx <-> &str 的映射关系被同样保存在该数据结构中
+fn generate_idx_str_mapping<'a>(graph: &'a HashMap<&str, Vec<&str>>) -> Vec<&'a str> {
+    let mut node = vec![];
+    for &key in graph.keys() {
+        insert_data(key, &mut node);
+        graph.get(key).unwrap().iter().for_each(|&x| insert_data(x, &mut node));
+    }
+    node
+}
+
+/// 根据预定义的唯一性插入原则, 获取对应 &str 到 idx 的映射
+fn get_idx<'a>(data: &'a str, vec: &Vec<&'a str>) -> usize {
+    vec.iter().position(|&s| s == data).unwrap()
+}
+
+/// 根据需求 **唯一性** 的插入数据到 Vec<&'a str>, 以存储 idx->&str 的映射信息
+fn insert_data<'a>(data: &'a str, vec: &mut Vec<&'a str>) {
+    if ! vec.contains(&data) {
+        vec.push(data);
+    }
 }
 
 /// 将所有临接点标记为访问并递归进入
+#[deprecated]
 fn dfs<'a>(node: &'a str, graph: &'a HashMap<&'a str, Vec<&'a str>>, visited: &mut HashSet<&'a str>) {
     visited.insert(node);
     println!("visited: {node}");
