@@ -14,26 +14,23 @@ mod types;
 mod rules;
 
 pub fn retire_time(time: &str, tp: &str) -> String {
-    // ("1971-04", "原法定退休年龄55周岁女职工", "2026-08,55.33,4"),
     let (year, month) = time.split_once('-').unwrap();
     let types: PersonnelCategory = tp.parse().unwrap();
     let birth_date = Date::new(year.parse().unwrap(), month.parse().unwrap());
+    // dbg!(&year, &month, &types);
 
-    dbg!(&year, &month, &types);
-
+    /// 当前使用的规则
+    /// 传入的顺序决定了不同规则适用的先后
     let retire_rules = CombinedRules { rules: vec![Box::new(rules::Rules20240913), Box::new(rules::Rules1978) ] } ;
-    let retire_time = retire_rules.calculate_working_date(&birth_date, &types);
-
+    let mixed_working_time = retire_rules.calculate_working_date(&birth_date, &types);
     let original_retire_time = rules::Rules1978.calculate_working_date(&birth_date, &types);
-    dbg!(retire_time, original_retire_time);
-    let delay_month: usize = (retire_time.unwrap() - (birth_date + original_retire_time.unwrap())).into();
-    let retire_age: f32 = (retire_time.unwrap() - birth_date).into();
+    
+    let retire_delay = mixed_working_time.unwrap() - original_retire_time.unwrap();
 
-    dbg!( format_f32(retire_age));
     format!("{},{},{}",
-        retire_time.unwrap(),
-        format_f32(retire_age),
-        delay_month
+            birth_date + mixed_working_time.unwrap(),
+            format_f32(mixed_working_time.unwrap().into()),
+            retire_delay.to_month()
     )
 }
 

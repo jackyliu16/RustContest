@@ -1,3 +1,15 @@
+//! 基于 RetirementRules 规约实现的针对于 国发【1978】104 号
+//! 《國務院關於安置老弱病殘幹部的暫行辦法》
+//! 《国务院关于工人退休、退职的暂行办法》的实现
+//!
+//! # 参考文献:
+//! - http://www.gd.gov.cn/zwgk/wjk/zcfgk/content/post_2531473.html
+//!
+//! # 主要特点:
+//! - 男性年满 60 周岁
+//! - 女性(党政机关、群众团体、企业、事业单位的干部) 年满 55 周岁
+//! - 女性(工人) 年满 50 周岁
+
 use crate::retirement::date::Date;
 use crate::retirement::rules::RetirementRules;
 use crate::retirement::types::PersonnelCategory;
