@@ -6,6 +6,9 @@ pub struct Date {
     pub month: isize,
 }
 impl Date {
+    pub fn default() -> Self{
+        Self { year: 0, month: 1 }
+    }
 
     /// 用于直接输入年份
     pub fn new(year: isize, month: isize) -> Self {
@@ -35,7 +38,7 @@ impl Date {
     }
 
     pub fn to_month(&self) -> usize {
-        (self.year * 12 + self.month) as usize - 1
+        (self.year * 12 + self.month) as usize 
     }
 }
 
