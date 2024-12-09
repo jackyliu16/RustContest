@@ -11,5 +11,7 @@
 // ---
 #![cfg_attr(docsrs, feature(doc_cfg))]
 
+mod consts;
+
 mod zuc128;
 pub use self::zuc128::ZUC128;
