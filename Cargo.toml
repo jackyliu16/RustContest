@@ -16,3 +16,6 @@ rustdoc-args = ["--cfg", "docsrs"]
 
 [dependencies]
 const-str = "0.5.7"
+
+[dev-dependencies]
+bytemuck = "1.20.0"
