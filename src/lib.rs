@@ -14,4 +14,6 @@
 mod consts;
 
 mod zuc128;
+mod eea3_128;
+
 pub use self::zuc128::ZUC128;
